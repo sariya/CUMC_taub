@@ -51,5 +51,5 @@ chr_info_melt2<-chr_info_melt2[which(chr_info_melt2$info>=0.40),]
 
 setwd("/mnt/mfs/scratch/GT_Admix/ss5505/imputation/batch2/counts_data/info_threshold_counts/")
 
-print(paste("Total Bi-allelic SNPs after MAF filter for 1000G Multialleic",nrow(chr_info_melt2)) )
+print(paste("Total Bi-allelic SNPs after MAF filter for  biallelic",nrow(chr_info_melt2)) )
 print("we are done cranking data")
