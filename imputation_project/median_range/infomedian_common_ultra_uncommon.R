@@ -39,7 +39,7 @@ a1_length<-unlist(lapply(df_all[[i]]$a1, function(x) nchar(x)))
 ###throw whatver was an structual variants
 #df_all[[i]]<-df_all[[i]][which(a1_length==1),]
 
-df_all[[i]]<-df_all[[i]][which(a1_length==1 &a0_length==1),]
+df_all[[i]]<-df_all[[i]][which(a1_length==1 & a0_length==1),]
 
 df_all[[i]]$info<-as.numeric(as.character(df_all[[i]]$info))
 
@@ -81,13 +81,13 @@ df_all[[i]]<-data.table::fread(file_impute2_info, showProgress = TRUE)
 a0_length<-unlist(lapply(df_all[[i]]$a0, function(x) nchar(x)))
 
 ###throw whatver is structual variants
-df_all[[i]]<-df_all[[i]][which(a0_length==1),]
+#df_all[[i]]<-df_all[[i]][which(a0_length==1),]
 
 ###get length of a1 allele 
 a1_length<-unlist(lapply(df_all[[i]]$a1, function(x) nchar(x)))
 
 ###throw whatver was an structual variants
-df_all[[i]]<-df_all[[i]][which(a1_length==1),]
+df_all[[i]]<-df_all[[i]][which(a1_length==1 & a0_length==1),]
 df_all[[i]]$info<-as.numeric(as.character(df_all[[i]]$info))
 
 #--work with polymorphic SNPs
