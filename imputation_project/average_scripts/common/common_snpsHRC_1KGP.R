@@ -22,10 +22,9 @@ filename<-"merged_info_CHR"
 ext<-".info"
 df_all <- as.list(rep("", 22)) 
 
+#--loop through different number of chromosomes
 for(i in seq(1,22)){
 file_impute2_info<-paste(filename,i,ext,sep="")
-
-newdf<-paste("df",i,sep="")
 
 df_all[[i]]<-data.table::fread(file_impute2_info, showProgress = TRUE)
 #https://stackoverflow.com/questions/16566799/change-variable-name-in-for-loop-using-r
@@ -71,10 +70,9 @@ filename<-"merged_info_CHR"
 ext<-".info"
 df_all <- as.list(rep("", 22)) 
 
+#loop through chromsomes for HRC data
 for(i in seq(1,22)){
 file_impute2_info<-paste(filename,i,ext,sep="")
-
-newdf<-paste("df",i,sep="")
 
 df_all[[i]]<-data.table::fread(file_impute2_info, showProgress = TRUE)
 #https://stackoverflow.com/questions/16566799/change-variable-name-in-for-loop-using-r
@@ -208,7 +206,7 @@ write.table(as.data.frame(info_uncommon %>% group_by(panel) %>% summarize_at(var
 write.table(as.data.frame(info_rare %>% group_by(panel) %>% summarize_at(vars(info),mean)),"0.4info_rare",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
 write.table(as.data.frame(info_ultra_rare %>% group_by(panel) %>% summarize_at(vars(info),mean)),"0.4info_ultra_rare",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
 
-print("Performed for all common SNPs with Info >0.40")
+print("Performed for all common SNPs with Info >=0.40")
 print("Done printing higher level MAF info and values")
 ###
 
