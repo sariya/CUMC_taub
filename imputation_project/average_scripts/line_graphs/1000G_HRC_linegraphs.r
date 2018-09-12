@@ -198,13 +198,8 @@ return (transform(df_input,binned=cut(df_input$exp_freq_a1,include.lowest = TRUE
 
 ########
 ########
-########
-create_plots<-function(img_name,x_lower,x_upper){
-print("plot ")
-}
 
 binned_snps<-create_binned_df(merged_dfs,0,1,0.05)
-#binned_snps<-transform(merged_dfs,binned=cut(merged_dfs$exp_freq_a1,include.lowest = TRUE, seq(0, 1, by=0.05)))
 binned_snps<-binned_snps[complete.cases(binned_snps),]
 
 mean_all<-as.data.frame(binned_snps %>% group_by(binned,panel) %>% summarize_at(vars(info),mean))
