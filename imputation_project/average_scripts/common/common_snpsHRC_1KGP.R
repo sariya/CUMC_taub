@@ -1,13 +1,13 @@
 #!/bin/Rscript
 
-##
-## No binning for MAF is performed
-# Get mean for ultra, rare and common SNPs. This for common SNPs only
 #Date 06/16/2018
+
+#
+#Get mean for ultra, rare and common SNPs. This for common SNPs only
+#this contains code for binning as well.
 #
 #MAF box plot for KGP and HRC
 #
-#Read KGP data first. 
 #
 #
 library(dplyr)
@@ -15,6 +15,8 @@ library("data.table")
 library("Cairo")
 library(plyr)
 library(ggplot2)
+
+#Read KGP data first. 
 
 setwd("/mnt/mfs/hgrcgrid/shared/GT_ADMIX/HRC_WellcomeTrust/imputation_1000indiv/impute2/1KGP/unharmonized/merged_info_files/")
 
