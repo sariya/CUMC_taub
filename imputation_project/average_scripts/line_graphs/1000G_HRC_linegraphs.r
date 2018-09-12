@@ -3,10 +3,12 @@
 ##
 #Date 06/26/2018
 #
-#MAF box plot for KGP and HRC
-#
+#MAF line graph for KGP and HRC
+#Find counts per different info thresholds with different MAF bins
+
 #Read KGP data first. 
 #
+
 library(dplyr)
 library("data.table")
 library("Cairo")
