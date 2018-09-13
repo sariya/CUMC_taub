@@ -18,7 +18,6 @@ library(plyr)
 matrix_file<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/EPISTASIS/gene_expression_data/amanda_myers/all_cases/fixed_spaces_leading_spaces"
 gene.exp_mat<-read.table(matrix_file,header=TRUE)
 print(dim(gene.exp_mat))
-print(head(gene.exp_mat))
 
 #
 ####https://stackoverflow.com/a/44230563/2740831
