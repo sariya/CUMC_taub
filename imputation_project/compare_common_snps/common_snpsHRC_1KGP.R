@@ -145,6 +145,20 @@ dataf_0.80_counts<-as.data.frame( info_0.80 %>% group_by(panel) %>% summarize_at
 write.table(dataf_0.80_counts,"0.8snpcounts_per_panel",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
 write.table(dataf_0.40_counts,"0.4snpcounts_per_panel",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
 
+#
+#Work with MAF bins and Info threshold
+#
+
+info_1_5MAF_0.40<-merged_dfs[which(merged_dfs$exp_freq_a1<=0.05 & merged_dfs$exp_freq_a1>=0.01 & merged_dfs$info>=0.40),]
+info_0.1_1MAF_0.40<-merged_dfs[which(merged_dfs$exp_freq_a1<0.01 & merged_dfs$exp_freq_a1>=0.001  & merged_dfs$info>=0.40),]
+info_0_0.1MAF_0.40<-merged_dfs[which(merged_dfs$exp_freq_a1<0.001 & merged_dfs$exp_freq_a1>=0  & merged_dfs$info>=0.40),]
+
+info_1_5MAF_0.80<-merged_dfs[which(merged_dfs$exp_freq_a1<=0.05 & merged_dfs$exp_freq_a1>=0.01 & merged_dfs$info>=0.80),]
+info_0.1_1MAF_0.80<-merged_dfs[which(merged_dfs$exp_freq_a1<0.01 & merged_dfs$exp_freq_a1>=0.001  & merged_dfs$info>=0.80),]
+info_0_0.1MAF_0.80<-merged_dfs[which(merged_dfs$exp_freq_a1<0.001 & merged_dfs$exp_freq_a1>=0  & merged_dfs$info>=0.80),]
+
+
+
 
 ##########################
 #########################
