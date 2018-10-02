@@ -46,7 +46,7 @@ df_all[[i]]$info<-as.numeric(as.character(df_all[[i]]$info))
 df_all[[i]]$exp_freq_a1<-as.numeric(as.character(df_all[[i]]$exp_freq_a1))
 #df_all[[i]]<-df_all[[i]][which(df_all[[i]]$exp_freq_a1!=0),]
 
-df_all[[i]]<-df_all[[i]][,-c(9,10,11,12)] #delete type, certainty and other useless
+df_all[[i]]<-df_all[[i]][,-c(9)] #delete type, certainty and other useless
 df_all[[i]]$position<-as.numeric(as.character(df_all[[i]]$position))
 ###Fix alelel frequency
 ###
@@ -95,7 +95,7 @@ df_all[[i]]$position<-as.numeric(as.character(df_all[[i]]$position))
 df_all[[i]]$exp_freq_a1<-as.numeric(as.character(df_all[[i]]$exp_freq_a1))
 #df_all[[i]]<-df_all[[i]][which(df_all[[i]]$exp_freq_a1!=0),]
 
-df_all[[i]]<-df_all[[i]][,-c(9,10,11,12)] #delete type, certainty and other useless
+df_all[[i]]<-df_all[[i]][,-c(9)] #delete type, certainty and other useless
 
 ###Fix alelel frequency
 ###
