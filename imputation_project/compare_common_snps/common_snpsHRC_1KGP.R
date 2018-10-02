@@ -175,58 +175,53 @@ write.table(as.data.frame(info_0_0.1MAF %>% group_by(panel) %>% summarize_at(var
 
 
 ##########################
-#########################
-######################
-intersect_position<-(Reduce(intersect,list(df_info_impute_1kgp$position,df_info_impute_hrc$position)))
-print(length(intersect_position))
+########################## The end
+##########################
+#intersect_position<-(Reduce(intersect,list(df_info_impute_1kgp$position,df_info_impute_hrc$position)))
+#print(length(intersect_position))
 
 ###
 ###Find index of common positions
 ###
 
-index_hrc<-match(intersect_position,df_info_impute_hrc$position)
-index_1kgp<-match(intersect_position,df_info_impute_1kgp$position)
-print(length(index_hrc))
-print(length(index_1kgp))
+#index_hrc<-match(intersect_position,df_info_impute_hrc$position)
+#index_1kgp<-match(intersect_position,df_info_impute_1kgp$position)
+#print(length(index_hrc))
+#print(length(index_1kgp))
 
-print("Found index of common positions")
+#print("Found index of common positions")
 ###
 ###Keep only matched positions 
 ###
 
-df_info_impute_1kgp<-df_info_impute_1kgp[index_1kgp,]
-df_info_impute_hrc<-df_info_impute_hrc[index_hrc,]
+#df_info_impute_1kgp<-df_info_impute_1kgp[index_1kgp,]
+#df_info_impute_hrc<-df_info_impute_hrc[index_hrc,]
 
-##
+
 ##Check if alleles match or not
-##
+#sum(df_info_impute_1kgp[,4]==df_info_impute_hrc[,4])
+#sum(df_info_impute_1kgp[,4]!=df_info_impute_hrc[,4])
+#passed_a0_allele<-which(df_info_impute_1kgp[,4]==df_info_impute_hrc[,4])
+#failed_a0_allele<-which(df_info_impute_1kgp[,4]!=df_info_impute_hrc[,4])
 
-sum(df_info_impute_1kgp[,4]==df_info_impute_hrc[,4])
-sum(df_info_impute_1kgp[,4]!=df_info_impute_hrc[,4])
-passed_a0_allele<-which(df_info_impute_1kgp[,4]==df_info_impute_hrc[,4])
-failed_a0_allele<-which(df_info_impute_1kgp[,4]!=df_info_impute_hrc[,4])
+#dim(df_info_impute_1kgp)
+#dim(df_info_impute_hrc)
 
-dim(df_info_impute_1kgp)
-dim(df_info_impute_hrc)
-
-##
 ##Remove if alleles didn't match
-##
 
-if(length(failed_a0_allele)>0){
-df_info_impute_1kgp<-df_info_impute_1kgp[-c(failed_a0_allele),]
-df_info_impute_hrc<-df_info_impute_hrc[-c(failed_a0_allele),]
+#if(length(failed_a0_allele)>0){
+#df_info_impute_1kgp<-df_info_impute_1kgp[-c(failed_a0_allele),]
+#df_info_impute_hrc<-df_info_impute_hrc[-c(failed_a0_allele),]
+#}
 
-}
+#print("Removed SNPs where A0 didn't match")
+#dim(df_info_impute_1kgp)
+#dim(df_info_impute_hrc)
 
-print("Removed SNPs where A0 didn't match")
-dim(df_info_impute_1kgp)
-dim(df_info_impute_hrc)
-
-print(sum(df_info_impute_1kgp[,5]==df_info_impute_hrc[,5]))
-print(sum(df_info_impute_1kgp[,5]!=df_info_impute_hrc[,5]))
-passed_a1_allele<-which(df_info_impute_1kgp[,5]==df_info_impute_hrc[,5])
-failed_a1_allele<-which(df_info_impute_1kgp[,5]!=df_info_impute_hrc[,5])
+#print(sum(df_info_impute_1kgp[,5]==df_info_impute_hrc[,5]))
+#print(sum(df_info_impute_1kgp[,5]!=df_info_impute_hrc[,5]))
+#passed_a1_allele<-which(df_info_impute_1kgp[,5]==df_info_impute_hrc[,5])
+#failed_a1_allele<-which(df_info_impute_1kgp[,5]!=df_info_impute_hrc[,5])
 
 dim(df_info_impute_1kgp)
 dim(df_info_impute_hrc)
