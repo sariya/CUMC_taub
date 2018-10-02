@@ -114,6 +114,22 @@ setwd("/mnt/mfs/scratch/GT_Admix/ss5505/imputation/batch2/plots/impute2/compare_
 ###Find common positions
 ###
 
+
+#Harmonize SNPs based on position, Allele and chromosome number
+## .id is the chromosome number 
+df_info_impute_1kgp$harmonizedSNP<-paste(df_info_impute_1kgp$.id,df_info_impute_1kgp$position,df_info_impute_1kgp$a0,df_info_impute_1kgp$a1,sep=":")
+df_info_impute_hrc$harmonizedSNP<-paste(df_info_impute_hrc$.id,df_info_impute_hrc$position,df_info_impute_hrc$a0,df_info_impute_hrc$a1,sep=":")
+
+intersect_harmonizedSNP<-(Reduce(intersect,list(df_info_impute_1kgp$harmonizedSNP,df_info_impute_hrc$harmonizedSNP)))
+print(length(intersect_harmonizedSNP))
+index_hrc<-match(intersect_harmonizedSNP,df_info_impute_hrc$harmonizedSNP)
+index_1kgp<-match(intersect_harmonizedSNP,df_info_impute_1kgp$harmonizedSNP)
+print(length(index_hrc))
+print(length(index_1kgp))
+
+##########################
+#########################
+######################
 intersect_position<-(Reduce(intersect,list(df_info_impute_1kgp$position,df_info_impute_hrc$position)))
 print(length(intersect_position))
 
