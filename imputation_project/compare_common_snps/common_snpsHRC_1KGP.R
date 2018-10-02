@@ -174,6 +174,8 @@ write.table(as.data.frame(info_0.1_1MAF %>% group_by(panel) %>% summarize_at(var
 write.table(as.data.frame(info_0_0.1MAF %>% group_by(panel) %>% summarize_at(vars(info),length)),"countsn0.4inforange_0_0.1MAF",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
 
 
+print("Leaving script")
+
 ##########################
 ########################## The end
 ##########################
@@ -218,96 +220,93 @@ write.table(as.data.frame(info_0_0.1MAF %>% group_by(panel) %>% summarize_at(var
 #dim(df_info_impute_1kgp)
 #dim(df_info_impute_hrc)
 
-#print(sum(df_info_impute_1kgp[,5]==df_info_impute_hrc[,5]))
-#print(sum(df_info_impute_1kgp[,5]!=df_info_impute_hrc[,5]))
+#print(sum(df_info_impute_1kgp[,5]==df_info_impute_hrc[,5])) #print(sum(df_info_impute_1kgp[,5]!=df_info_impute_hrc[,5]))
 #passed_a1_allele<-which(df_info_impute_1kgp[,5]==df_info_impute_hrc[,5])
 #failed_a1_allele<-which(df_info_impute_1kgp[,5]!=df_info_impute_hrc[,5])
 
-dim(df_info_impute_1kgp)
-dim(df_info_impute_hrc)
+#dim(df_info_impute_1kgp) #dim(df_info_impute_hrc)
 
 ##
 ##Remove if alleles didn't match
 ##
 
-if(length(failed_a1_allele)>0){
-df_info_impute_1kgp<-df_info_impute_1kgp[-c(failed_a1_allele),]
-df_info_impute_hrc<-df_info_impute_hrc[-c(failed_a1_allele),]
-}
+#if(length(failed_a1_allele)>0){
+#df_info_impute_1kgp<-df_info_impute_1kgp[-c(failed_a1_allele),]
+#df_info_impute_hrc<-df_info_impute_hrc[-c(failed_a1_allele),]
+#}
 
-dim(df_info_impute_1kgp)
-dim(df_info_impute_hrc)
+#dim(df_info_impute_1kgp)
+#dim(df_info_impute_hrc)
 
-print("Removed SNPs where A1 didn't match")
-df_info_impute_1kgp$panel<-"1000G"
-df_info_impute_hrc$panel<-"HRC"
-merged_dfs<-rbind(df_info_impute_1kgp,df_info_impute_hrc)
+#print("Removed SNPs where A1 didn't match")
+#df_info_impute_1kgp$panel<-"1000G"
+#df_info_impute_hrc$panel<-"HRC"
+#merged_dfs<-rbind(df_info_impute_1kgp,df_info_impute_hrc)
 
-print("Merged DFs")
+#print("Merged DFs")
 
-uncommon<-merged_dfs[which(merged_dfs$exp_freq_a1<=0.05),]
-rare<-merged_dfs[which(merged_dfs$exp_freq_a1<=0.01),]
-ultra_rare<-merged_dfs[which(merged_dfs$exp_freq_a1<=0.001),]
+#uncommon<-merged_dfs[which(merged_dfs$exp_freq_a1<=0.05),]
+#rare<-merged_dfs[which(merged_dfs$exp_freq_a1<=0.01),]
+#ultra_rare<-merged_dfs[which(merged_dfs$exp_freq_a1<=0.001),]
 
-write.table(as.data.frame(uncommon %>% group_by(panel) %>% summarize_at(vars(info),median)),"info_uncommon",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
-write.table(as.data.frame(rare %>% group_by(panel) %>% summarize_at(vars(info),median)),"info_rare",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
-write.table(as.data.frame(ultra_rare %>% group_by(panel) %>% summarize_at(vars(info),median)),"info_ultra_rare",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
+#write.table(as.data.frame(uncommon %>% group_by(panel) %>% summarize_at(vars(info),median)),"info_uncommon",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
+#write.table(as.data.frame(rare %>% group_by(panel) %>% summarize_at(vars(info),median)),"info_rare",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
+#write.table(as.data.frame(ultra_rare %>% group_by(panel) %>% summarize_at(vars(info),median)),"info_ultra_rare",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
 
-print("Compared for all commmon SNPs")
+#print("Compared for all commmon SNPs")
 
-info_uncommon<-merged_dfs[which(merged_dfs$exp_freq_a1<=0.05 & merged_dfs$info>=0.40),]
-info_rare<-merged_dfs[which(merged_dfs$exp_freq_a1<=0.01  & merged_dfs$info>=0.40),]
-info_ultra_rare<-merged_dfs[which(merged_dfs$exp_freq_a1<=0.001  & merged_dfs$info>=0.40),]
+#info_uncommon<-merged_dfs[which(merged_dfs$exp_freq_a1<=0.05 & merged_dfs$info>=0.40),]
+#info_rare<-merged_dfs[which(merged_dfs$exp_freq_a1<=0.01  & merged_dfs$info>=0.40),]
+#info_ultra_rare<-merged_dfs[which(merged_dfs$exp_freq_a1<=0.001  & merged_dfs$info>=0.40),]
 
-write.table(as.data.frame(info_uncommon %>% group_by(panel) %>% summarize_at(vars(info),median)),"0.4info_uncommon",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
-write.table(as.data.frame(info_rare %>% group_by(panel) %>% summarize_at(vars(info),median)),"0.4info_rare",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
-write.table(as.data.frame(info_ultra_rare %>% group_by(panel) %>% summarize_at(vars(info),median)),"0.4info_ultra_rare",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
+#write.table(as.data.frame(info_uncommon %>% group_by(panel) %>% summarize_at(vars(info),median)),"0.4info_uncommon",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
+#write.table(as.data.frame(info_rare %>% group_by(panel) %>% summarize_at(vars(info),median)),"0.4info_rare",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
+#write.table(as.data.frame(info_ultra_rare %>% group_by(panel) %>% summarize_at(vars(info),median)),"0.4info_ultra_rare",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
 
-print("Performed for all common SNPs with Info >0.40")
-print("Done printing higher level MAF info and values")
+#print("Performed for all common SNPs with Info >0.40")
+#print("Done printing higher level MAF info and values")
 ###
 
-binned_snps<-transform(merged_dfs,binned=cut(merged_dfs$exp_freq_a1,include.lowest = TRUE, seq(0, 1, by=0.05)))
-binned_snps<-binned_snps[complete.cases(binned_snps),]
-median_all<-as.data.frame(binned_snps %>% group_by(binned,panel) %>% summarize_at(vars(info),median))
-write.table(median_all,"boxPlots_all",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
+#binned_snps<-transform(merged_dfs,binned=cut(merged_dfs$exp_freq_a1,include.lowest = TRUE, seq(0, 1, by=0.05)))
+#binned_snps<-binned_snps[complete.cases(binned_snps),]
+#median_all<-as.data.frame(binned_snps %>% group_by(binned,panel) %>% summarize_at(vars(info),median))
+#write.table(median_all,"boxPlots_all",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
 
 ##################################
-binned_snps<-transform(merged_dfs,binned=cut(merged_dfs$exp_freq_a1, include.lowest = TRUE,seq(0, 0.05, by=0.005)))
-binned_snps<-binned_snps[complete.cases(binned_snps),]
-median_uncommon<-as.data.frame(binned_snps %>% group_by(binned,panel) %>% summarize_at(vars(info),median))
-write.table(median_uncommon,"boxPlots_uncommon",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
+#binned_snps<-transform(merged_dfs,binned=cut(merged_dfs$exp_freq_a1, include.lowest = TRUE,seq(0, 0.05, by=0.005)))
+#binned_snps<-binned_snps[complete.cases(binned_snps),]
+#median_uncommon<-as.data.frame(binned_snps %>% group_by(binned,panel) %>% summarize_at(vars(info),median))
+#write.table(median_uncommon,"boxPlots_uncommon",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
 ##################################
-binned_snps<-transform(merged_dfs,binned=cut(merged_dfs$exp_freq_a1,include.lowest = TRUE, seq(0, 0.01, by=0.001)))
-binned_snps<-binned_snps[complete.cases(binned_snps),]
-median_ultra<-as.data.frame(binned_snps %>% group_by(binned,panel) %>% summarize_at(vars(info),median))
-write.table(median_ultra,"boxPlots_ultra",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
-print("Done with ultra rare")
+#binned_snps<-transform(merged_dfs,binned=cut(merged_dfs$exp_freq_a1,include.lowest = TRUE, seq(0, 0.01, by=0.001)))
+#binned_snps<-binned_snps[complete.cases(binned_snps),]
+#median_ultra<-as.data.frame(binned_snps %>% group_by(binned,panel) %>% summarize_at(vars(info),median))
+#write.table(median_ultra,"boxPlots_ultra",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
+#print("Done with ultra rare")
 
-print("Done with cutoff printing")
+#print("Done with cutoff printing")
 ####
 
-merged_dfs<-merged_dfs[which(merged_dfs$info>=0.40),]
+#merged_dfs<-merged_dfs[which(merged_dfs$info>=0.40),]
 
-binned_snps<-transform(merged_dfs,binned=cut(merged_dfs$exp_freq_a1,include.lowest = TRUE, seq(0, 1, by=0.05)))
-binned_snps<-binned_snps[complete.cases(binned_snps),]
-median_all<-as.data.frame(binned_snps %>% group_by(binned,panel) %>% summarize_at(vars(info),median))
-write.table(median_all,"0.40boxPlots_all",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
-print("done with All MAF")
+#binned_snps<-transform(merged_dfs,binned=cut(merged_dfs$exp_freq_a1,include.lowest = TRUE, seq(0, 1, by=0.05)))
+#binned_snps<-binned_snps[complete.cases(binned_snps),]
+#median_all<-as.data.frame(binned_snps %>% group_by(binned,panel) %>% summarize_at(vars(info),median))
+#write.table(median_all,"0.40boxPlots_all",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
+#print("done with All MAF")
 ##################################
-binned_snps<-transform(merged_dfs,binned=cut(merged_dfs$exp_freq_a1, include.lowest = TRUE,seq(0, 0.05, by=0.005)))
-binned_snps<-binned_snps[complete.cases(binned_snps),]
-median_uncommon<-as.data.frame(binned_snps %>% group_by(binned,panel) %>% summarize_at(vars(info),median))
-write.table(median_uncommon,"0.40boxPlots_uncommon",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
-print("done with 5% MAF")
+#binned_snps<-transform(merged_dfs,binned=cut(merged_dfs$exp_freq_a1, include.lowest = TRUE,seq(0, 0.05, by=0.005)))
+#binned_snps<-binned_snps[complete.cases(binned_snps),]
+#median_uncommon<-as.data.frame(binned_snps %>% group_by(binned,panel) %>% summarize_at(vars(info),median))
+#write.table(median_uncommon,"0.40boxPlots_uncommon",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
+#print("done with 5% MAF")
 ##################################
-binned_snps<-transform(merged_dfs,binned=cut(merged_dfs$exp_freq_a1,include.lowest = TRUE, seq(0, 0.01, by=0.001)))
-binned_snps<-binned_snps[complete.cases(binned_snps),]
-median_ultra<-as.data.frame(binned_snps %>% group_by(binned,panel) %>% summarize_at(vars(info),median))
-write.table(median_ultra,"0.40boxPlots_ultra",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
-print("Done with ultra rare")
+#binned_snps<-transform(merged_dfs,binned=cut(merged_dfs$exp_freq_a1,include.lowest = TRUE, seq(0, 0.01, by=0.001)))
+#binned_snps<-binned_snps[complete.cases(binned_snps),]
+#median_ultra<-as.data.frame(binned_snps %>% group_by(binned,panel) %>% summarize_at(vars(info),median))
+#write.table(median_ultra,"0.40boxPlots_ultra",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
+#print("Done with ultra rare")
 
-print("Leaving script")
 
 ##################################
 ##################################
