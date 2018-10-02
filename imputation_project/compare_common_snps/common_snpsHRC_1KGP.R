@@ -149,16 +149,28 @@ write.table(dataf_0.40_counts,"0.4snpcounts_per_panel",quote=FALSE,row.names=FAL
 #Work with MAF bins and Info threshold
 #
 
+##greater than 0
+info_1_5MAF<-merged_dfs[which(merged_dfs$exp_freq_a1<=0.05 & merged_dfs$exp_freq_a1>=0.01 & merged_dfs$info>=0),]
+info_0.1_1MAF<-merged_dfs[which(merged_dfs$exp_freq_a1<0.01 & merged_dfs$exp_freq_a1>=0.001  & merged_dfs$info>=0),]
+info_0_0.1MAF<-merged_dfs[which(merged_dfs$exp_freq_a1<0.001 & merged_dfs$exp_freq_a1>=0  & merged_dfs$info>=0),]
+
+##greater than 0.40
 info_1_5MAF_0.40<-merged_dfs[which(merged_dfs$exp_freq_a1<=0.05 & merged_dfs$exp_freq_a1>=0.01 & merged_dfs$info>=0.40),]
 info_0.1_1MAF_0.40<-merged_dfs[which(merged_dfs$exp_freq_a1<0.01 & merged_dfs$exp_freq_a1>=0.001  & merged_dfs$info>=0.40),]
 info_0_0.1MAF_0.40<-merged_dfs[which(merged_dfs$exp_freq_a1<0.001 & merged_dfs$exp_freq_a1>=0  & merged_dfs$info>=0.40),]
 
+##greater than 0.80
 info_1_5MAF_0.80<-merged_dfs[which(merged_dfs$exp_freq_a1<=0.05 & merged_dfs$exp_freq_a1>=0.01 & merged_dfs$info>=0.80),]
 info_0.1_1MAF_0.80<-merged_dfs[which(merged_dfs$exp_freq_a1<0.01 & merged_dfs$exp_freq_a1>=0.001  & merged_dfs$info>=0.80),]
 info_0_0.1MAF_0.80<-merged_dfs[which(merged_dfs$exp_freq_a1<0.001 & merged_dfs$exp_freq_a1>=0  & merged_dfs$info>=0.80),]
 
 #
 # Get counts 
+#
+
+counts_info_1_5MAF<-as.data.frame(info_1_5MAF %>% group_by(panel) %>% summarize_at(vars(info),length))
+counts_info_0.1_1MAF<-as.data.frame(info_0.1_1MAF %>% group_by(panel) %>% summarize_at(vars(info),length))
+counts_info_0_0.1MAF<-as.data.frame(info_0_0.1MAF %>% group_by(panel) %>% summarize_at(vars(info),length))
 #
 
 counts_info_1_5MAF_0.40<-as.data.frame(info_1_5MAF_0.40 %>% group_by(panel) %>% summarize_at(vars(info),length))
@@ -168,10 +180,6 @@ counts_info_0_0.1MAF_0.40<-as.data.frame(info_0_0.1MAF_0.40 %>% group_by(panel) 
 counts_info_1_5MAF_0.80<-as.data.frame(info_1_5MAF_0.80 %>% group_by(panel) %>% summarize_at(vars(info),length))
 counts_info_0.1_1MAF_0.80<-as.data.frame(info_0.1_1MAF_0.80%>% group_by(panel) %>% summarize_at(vars(info),length))
 counts_info_0_0.1MAF_0.80<-as.data.frame(info_0_0.1MAF_0.80 %>% group_by(panel) %>% summarize_at(vars(info),length))
-
-write.table(as.data.frame(info_1_5MAF %>% group_by(panel) %>% summarize_at(vars(info),length)),"counts0.4inforange_1_5MAF",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
-write.table(as.data.frame(info_0.1_1MAF %>% group_by(panel) %>% summarize_at(vars(info),length)),"counts0.4inforange_0.1_1MAF",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
-write.table(as.data.frame(info_0_0.1MAF %>% group_by(panel) %>% summarize_at(vars(info),length)),"countsn0.4inforange_0_0.1MAF",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
 
 
 print("Leaving script")
