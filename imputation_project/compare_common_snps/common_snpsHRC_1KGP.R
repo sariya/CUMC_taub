@@ -127,6 +127,25 @@ index_1kgp<-match(intersect_harmonizedSNP,df_info_impute_1kgp$harmonizedSNP)
 print(length(index_hrc))
 print(length(index_1kgp))
 
+df_info_impute_1kgp<-df_info_impute_1kgp[index_1kgp,]
+df_info_impute_hrc<-df_info_impute_hrc[index_hrc,]
+#
+print(dim(df_info_impute_1kgp))
+print(dim(df_info_impute_hrc))
+
+merged_dfs<-rbind(df_info_impute_1kgp,df_info_impute_hrc)
+print("Merged DFs")
+
+info_0.40<-merged_dfs[which(merged_dfs$info>=0.40),]
+dataf_0.40_counts<-as.data.frame( info_0.40 %>% group_by(panel) %>% summarize_at(vars(info),length))
+
+info_0.80<-merged_dfs[which(merged_dfs$info>=0.80),]
+dataf_0.80_counts<-as.data.frame( info_0.80 %>% group_by(panel) %>% summarize_at(vars(info),length))
+
+write.table(dataf_0.80_counts,"0.8snpcounts_per_panel",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
+write.table(dataf_0.40_counts,"0.4snpcounts_per_panel",quote=FALSE,row.names=FALSE, col.names=TRUE,sep="\t")
+
+
 ##########################
 #########################
 ######################
