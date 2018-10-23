@@ -15,6 +15,9 @@ library(RColorBrewer)
 library(marray)
 library(gtools)
 
+#Source of code mainly
+##http://www.hiv.lanl.gov/content/sequence/HEATMAP/heatmap.html?sample_input=1
+#
 pheno<-read.table( "/mnt/mfs/hgrcgrid/shared/GT_ADMIX/PDexpression/sanjeev_analyses/exon_level/APT_analysis_scripts_data/OUT_split_exon_modeling/pheno_rin_study" ,header=TRUE)
 row.names(pheno)<-pheno$IID
 
@@ -33,6 +36,7 @@ print(length(which(df.model.genes$Pvalue<pvalue_threshold)))
 genes_pvalue_threshold<- df.model.genes[which(df.model.genes$Pvalue<pvalue_threshold),]
 print(dim(genes_pvalue_threshold))
 
+#--split wierd /\/\ things to extract gene names
 split_gene_assignment<-do.call (rbind,strsplit( unlist(genes_pvalue_threshold[,10]) ,"\\/\\/"))
 split_gene_assignment<-split_gene_assignment[,2]
 
@@ -46,6 +50,7 @@ genes_pvalue_threshold_genes<-genes_pvalue_threshold[,c(1,2,20)]
 which(genes_pvalue_threshold_genes$gene_names=="---")
 print(dim(genes_pvalue_threshold_genes))
 
+#get rid of genes with names as ---
 genes_pvalue_threshold_genes<-genes_pvalue_threshold_genes[-c(which(genes_pvalue_threshold_genes$gene_names=="---")),]
 
 #--check for duplicate gene names
@@ -75,14 +80,16 @@ color.map <- function(PD) {
 if (PD==0) "#ADFF2F"  else "#FF0000"  
 }
 
+#--use patient colors for side coloring of columns
 patientcolors <- lapply(cels_merge$PD, color.map)
 
 rownames(cels_merge)<-cels_merge[,1]
 print(dim(cels_merge))
+
+#--get rid of columns not needed from pheno merging
 cels_merge<-cels_merge[ , -which(names(cels_merge) %in% c("Row.names","IID","CATEGORY","SEX","AGE","PD","LRKK2","RIN","FID","STUDY"))]
 cels_merge_trans<-as.matrix(t(cels_merge))
 print(dim(cels_merge))
-# col=topo.colors(100) #col="heat.colors"
 
 #--set color key
 vec_m <- c(cels_merge_trans)
