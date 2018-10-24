@@ -5,6 +5,7 @@
 #
 #Get SNPs in different info and rsq threshold and MAF bins
 # Calculate mean for those snps
+#Perform Wilcoxon test
 #Imputation from 1000G
 #Sanjeev Sariya
 #10/24/2018
@@ -52,6 +53,12 @@ write.table(machadmix_joined_overlapping_r2Info,"overlap_machadmixInfoR2Hat",quo
 mean(machadmix_joined_overlapping_r2Info$R2_hat)
 mean(impute2_joined_overlapping_r2Info$R2_hat)
 
+wilcox.test(impute2_joined_overlapping_r2Info$R2_hat,machadmix_joined_overlapping_r2Info$R2_hat,paired=TRUE)
+
+#
+#
+#
+#
 
 #
 #Info >=0.40
