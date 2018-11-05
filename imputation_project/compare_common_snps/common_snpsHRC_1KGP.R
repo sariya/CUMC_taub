@@ -182,6 +182,36 @@ counts_info_0.1_1MAF_0.80<-as.data.frame(info_0.1_1MAF_0.80%>% group_by(panel) %
 counts_info_0_0.1MAF_0.80<-as.data.frame(info_0_0.1MAF_0.80 %>% group_by(panel) %>% summarize_at(vars(info),length))
 
 
+#
+#Get Statistics for counts_info_0_0.1MAF_0.80
+#
+#Get overlapping SNPs  
+#
+#
+info_snp_1000G_0.8_ultra_rare<-info_0_0.1MAF_0.80[which(panel=="1000G"),c(3,8,14)]
+info_snp_HRC_0.8_ultra_rare<-info_0_0.1MAF_0.80[which(panel=="HRC"),c(3,8,14)]
+orderedinfo_snp_1000G_0.8_ultra_rare<- info_snp_1000G_0.8_ultra_rare[order(info_snp_1000G_0.8_ultra_rare$harmonizedSNP),] 
+orderedinfo_snp_HRC_0.8_ultra_rare<- info_snp_HRC_0.8_ultra_rare[order(info_snp_HRC_0.8_ultra_rare$harmonizedSNP),] 
+
+HQ_UR_intersect_harmonizedSNP<-(Reduce(intersect,list(orderedinfo_snp_1000G_0.8_ultra_rare$harmonizedSNP,orderedinfo_snp_HRC_0.8_ultra_rare$harmonizedSNP)))
+
+index_1000G_HQ_UR<-match(HQ_UR_intersect_harmonizedSNP,orderedinfo_snp_1000G_0.8_ultra_rare$harmonizedSNP)
+index_HRC_HQ_UR <-match(HQ_UR_intersect_harmonizedSNP,orderedinfo_snp_HRC_0.8_ultra_rare$harmonizedSNP)
+print(length(index_1000G_HQ_UR))
+print(length(index_HRC_HQ_UR))
+
+df_info_impute_1000G_HQ_UR_overlapping<-orderedinfo_snp_1000G_0.8_ultra_rare[index_1000G_HQ_UR,]
+df_info_impute_hrc_HQ_UR_overlapping<-orderedinfo_snp_HRC_0.8_ultra_rare[index_HRC_HQ_UR,]
+
+print(dim(df_info_impute_1000G_HQ_UR_overlapping))
+print(dim(df_info_impute_hrc_HQ_UR_overlapping))
+colnames(df_info_impute_1000G_HQ_UR_overlapping)<-c("rs_id_1000G","Info_1000G","harmonizedSNP")
+colnames(df_info_impute_hrc_HQ_UR_overlapping)<-c("rs_id_HRC","Info_HRC","harmonizedSNP")
+
+joined_1000G_HRC_HQ_UR<-left_join(df_info_impute_1000G_HQ_UR_overlapping,df_info_impute_hrc_HQ_UR_overlapping,by=c("harmonizedSNP"))
+print(dim(joined_1000G_HRC_HQ_UR))
+wilcox.test(joined_1000G_HRC_HQ_UR$Info_HRC,joined_1000G_HRC_HQ_UR$Info_1000G,paired=TRUE)
+
 print("Leaving script")
 
 ##########################
