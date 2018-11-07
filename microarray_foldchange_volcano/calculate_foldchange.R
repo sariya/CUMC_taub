@@ -8,7 +8,8 @@
 #
 #
 library(dplyr)
-
+library(limma)
+library(Cairo)
 #--read matrix already adjusted and regressed
 summed<-read.table("duplicate_genes_summed",header=TRUE)
 print(dim(summed))
@@ -16,11 +17,12 @@ print(dim(summed))
 #get gene names
 gene_names<-summed[,1]
 
+summed<-summed[,-c(1)]
 row.names(summed)<-gene_names
 
 #--make group, N are normal, A ends for AD 
 group<-factor(c(rep(0,length(grep("N$",colnames(summed)))),rep(1,length(grep("A$",colnames(summed)))) ))
-group <- relevel(group, "0")
+#group <- relevel(group, "0")
 
 design<-model.matrix(~group+0)
 
@@ -30,7 +32,7 @@ topTable(fit2, coef = 2)
 
 results <- decideTests(fit2)
 a <- vennCounts(results)
-#mfrow.old <- par()$mfrow
-#par(mfrow=c(1,2))
-#vennDiagram(a)
-#vennDiagram(results, include=c("up", "down"), counts.col=c("red", "blue"), circle.col = c("red", "blue", "green3")) #par(mfrow=mfrow.old)
+
+CairoPDF("volcanoplot.pdf")
+volcanoplot(fit2 , coef=2, xlim =c(-1,1))
+dev.off()
