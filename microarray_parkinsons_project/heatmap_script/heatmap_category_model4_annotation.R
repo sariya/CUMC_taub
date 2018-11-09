@@ -41,23 +41,10 @@ print(min(df.model.genes$adjusted_cat2))
 df.model.genes<-df.model.genes[(which(df.model.genes$adjusted_cat3<0.05)),]
 print(dim(df.model.genes))
 
-##Annotation from
-##http://biolearnr.blogspot.com/2017/05/bfx-clinic-getting-up-to-date.html
-##
-##columns(huex10sttranscriptcluster.db)
-
-df.expression<-data.table::fread(file.expression, showProgress = TRUE,header=TRUE)
-print(dim(df.expression))
-
-df.model.genes<-data.table::fread(file.model_genes, showProgress = TRUE,header=TRUE)
-print(dim(df.model.genes))
-
-df.model.genes<-df.model.genes[(which(df.model.genes$adjusted_category3<0.05)),]
-
 ##probe.annots <- AnnotationDbi::select(   x       = huex10sttranscriptcluster.db,   keys    =  as.character(df.model.genes$Probeset),  columns = c("PROBEID", "ENSEMBL", "ENTREZID", "SYMBOL"),   keytype = "PROBEID"   )
 
 collapser <- function(x){
-  x %>% unique %>% sort %>% paste(collapse = "|")
+x %>% unique %>% sort %>% paste(collapse = "|")
 }  
   
 probe.annots  <- as.data.frame(AnnotationDbi::select(
@@ -74,11 +61,9 @@ joinedpvalue_adjusted_probe.annot<-left_join(df.model.genes,probe.annots,by=c("P
 joinedpvalue_adjusted_probe.annot<-joinedpvalue_adjusted_probe.annot[complete.cases(joinedpvalue_adjusted_probe.annot),]
 
 #--keep only limited
-#joinedpvalue_adjusted_probe.annot<-joinedpvalue_adjusted_probe.annot[,c(1,7,9)]
 
 joinedpvalue_adjusted_probe.annot<-joinedpvalue_adjusted_probe.annot[ , which(colnames(joinedpvalue_adjusted_probe.annot) %in% 
 c("Probeset","ENSEMBL","SYMBOL"))]
-
 
 #do a join on probe ids
 expression_value.shortlisted_genes<-left_join(joinedpvalue_adjusted_probe.annot,df.expression,by=c("Probeset"="V1"))
@@ -135,8 +120,7 @@ xlab = "Samples",ylab = "Genes",cexRow=1.5 ,col=my_palette ,
 main="Top Genes Model 4 Category 3")
 
 legend("topright", legend = c("Control","Case"),
-col = c( "#ADFF2F","#FF0000"  ), 
-lty= 1, lwd = 5,cex=1.2)
+col = c( "#ADFF2F","#FF0000"  ), lty= 1, lwd = 5,cex=1.2)
 
 dev.off()
 ######################
