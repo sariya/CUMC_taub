@@ -23,7 +23,7 @@ pheno<-read.table( "/mnt/mfs/hgrcgrid/shared/GT_ADMIX/PDexpression/sanjeev_analy
 row.names(pheno)<-pheno$IID
 
 file.expression<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/PDexpression/sanjeev_analyses/PD_RMAnormalized_core.txt"
-file.model_genes<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/PDexpression/sanjeev_analyses/gene_expr_rin_site_adjusted/Model_genes/Model4/pvalue_adjusted_sorted"
+file.model_genes<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/PDexpression/sanjeev_analyses/gene_expr_rin_site_adjusted/model4_overallsignificance_adjusted"
 
 df.expression<-data.table::fread(file.expression, showProgress = TRUE,header=TRUE)
 print(dim(df.expression))
@@ -32,33 +32,61 @@ df.model.genes<-data.table::fread(file.model_genes, showProgress = TRUE,header=T
 print(dim(df.model.genes))
 
 #get adjusted ones
-df.model.genes<-df.model.genes[(which(df.model.genes$adjusted_category3<0.05)),]
+df.model.genes<-df.model.genes[(which(df.model.genes$adjusted_Overall_pvalue <0.05)),]
+
+print(min(df.model.genes$adjusted_cat4))
+print(min(df.model.genes$adjusted_cat3))
+print(min(df.model.genes$adjusted_cat2))
+
+df.model.genes<-df.model.genes[(which(df.model.genes$adjusted_cat3<0.05)),]
+print(dim(df.model.genes))
 
 ##Annotation from
 ##http://biolearnr.blogspot.com/2017/05/bfx-clinic-getting-up-to-date.html
 ##
 ##columns(huex10sttranscriptcluster.db)
 
-probe.annots <- AnnotationDbi::select(
-  x       = huex10sttranscriptcluster.db,
-  keys    =  as.character(df.model.genes$Probeset),
-  columns = c("PROBEID", "ENSEMBL", "ENTREZID", "SYMBOL"),
-  keytype = "PROBEID"
-  )
+df.expression<-data.table::fread(file.expression, showProgress = TRUE,header=TRUE)
+print(dim(df.expression))
 
-probe.annots<-probe.annots[complete.cases(probe.annots),]  
+df.model.genes<-data.table::fread(file.model_genes, showProgress = TRUE,header=TRUE)
+print(dim(df.model.genes))
+
+df.model.genes<-df.model.genes[(which(df.model.genes$adjusted_category3<0.05)),]
+
+##probe.annots <- AnnotationDbi::select(   x       = huex10sttranscriptcluster.db,   keys    =  as.character(df.model.genes$Probeset),  columns = c("PROBEID", "ENSEMBL", "ENTREZID", "SYMBOL"),   keytype = "PROBEID"   )
+
+collapser <- function(x){
+  x %>% unique %>% sort %>% paste(collapse = "|")
+}  
+  
+probe.annots  <- as.data.frame(AnnotationDbi::select(
+x       = huex10sttranscriptcluster.db,
+keys    = as.character(df.model.genes$Probeset),
+columns = c("PROBEID", "ENSEMBL", "ENTREZID", "SYMBOL"),
+keytype = "PROBEID"  ) %>%
+group_by(PROBEID) %>% summarise_each(funs(collapser)) %>%   ungroup)
+  
+probe.annots  <-probe.annots[which(probe.annots$SYMBOL!=""  ),]
+ 
 probe.annots$PROBEID<-as.numeric(probe.annots$PROBEID)
 joinedpvalue_adjusted_probe.annot<-left_join(df.model.genes,probe.annots,by=c("Probeset"="PROBEID"))
 joinedpvalue_adjusted_probe.annot<-joinedpvalue_adjusted_probe.annot[complete.cases(joinedpvalue_adjusted_probe.annot),]
-#--keep only limited
-joinedpvalue_adjusted_probe.annot<-joinedpvalue_adjusted_probe.annot[,c(1,7,9)]
 
-#do a join on porbe ids
+#--keep only limited
+#joinedpvalue_adjusted_probe.annot<-joinedpvalue_adjusted_probe.annot[,c(1,7,9)]
+
+joinedpvalue_adjusted_probe.annot<-joinedpvalue_adjusted_probe.annot[ , which(colnames(joinedpvalue_adjusted_probe.annot) %in% 
+c("Probeset","ENSEMBL","SYMBOL"))]
+
+
+#do a join on probe ids
 expression_value.shortlisted_genes<-left_join(joinedpvalue_adjusted_probe.annot,df.expression,by=c("Probeset"="V1"))
 row.names(expression_value.shortlisted_genes)<-expression_value.shortlisted_genes$SYMBOL
 
 #--get rid of  Probeset         ENSEMBL  SYMBOL
-cels_genes<-expression_value.shortlisted_genes[,-c(1,2,3)]
+
+cels_genes<-expression_value.shortlisted_genes[ , -which(colnames(expression_value.shortlisted_genes) %in% c("Probeset","SYMBOL","ENSEMBL"))]
 print(dim(cels_genes))
 tranposed_celsgenes<-t(as.matrix(cels_genes))
 print(dim(tranposed_celsgenes))
@@ -98,23 +126,17 @@ colors_count = length(brks) - 1
 #--set your color key higher the darker
 my_palette =brewer.pal(colors_count,"YlOrRd")
 
-CairoPNG("model4_topcat3_pval_adjusted.png",height=1200,width=1200)
-
+CairoPNG("Poissonmodel4_topcat3_pval_adjusted2.png",height=1200,width=1200)
 heatmap.2((cels_merge_trans),
 key.xlab="Log gene expression", key.ylab="Count",
-ColSideColors=unlist(patientcolors),
-labCol = FALSE,breaks=brks,   key=TRUE,trace="none", 
-distfun=function(x) dist(x,method="euclidean") , hclustfun=function(m) hclust(m,method="complete"), margins=c(5,12),
- xlab = "Samples",ylab = "Genes"	 ,cexRow=1.5 ,
-col=my_palette ,
- main="Top Genes Model 4 Category 3"
-)
+ColSideColors=unlist(patientcolors),labCol = FALSE,breaks=brks,   key=TRUE,trace="none", 
+distfun=function(x) dist(x,method="euclidean") , hclustfun=function(m) hclust(m,method="complete"), margins=c(5,21),
+xlab = "Samples",ylab = "Genes",cexRow=1.5 ,col=my_palette ,
+main="Top Genes Model 4 Category 3")
 
-legend("topright",      
-    legend = c("Control","Case"),
-    col = c( "#ADFF2F","#FF0000"  ), 
-    lty= 1, lwd = 5,    cex=1.2
-    )
+legend("topright", legend = c("Control","Case"),
+col = c( "#ADFF2F","#FF0000"  ), 
+lty= 1, lwd = 5,cex=1.2)
 
 dev.off()
 ######################
