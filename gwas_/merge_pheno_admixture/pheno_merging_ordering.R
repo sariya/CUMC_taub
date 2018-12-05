@@ -38,8 +38,11 @@ colnames(sample_ids_merged)<-c("OldFID","OldIID")
 head(sample_ids_merged)
 print(dim(sample_ids_merged))
 
-mds_removed_indiv<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/GWAS_data_analyses/KINSHIP_06182018/gwas/gwas_nomasmesa__PRhgwas126/removed_indiv_MDS_King_output"
-df.mds<-read.table(mds_removed_indiv,header=TRUE)
+#mds_removed_indiv<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/GWAS_data_analyses/KINSHIP_06182018/gwas/gwas_nomasmesa__PRhgwas126/removed_indiv_MDS_King_output"
+mds_nonremoved_indiv<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/GWAS_data_analyses/KINSHIP_06182018/gwas/gwas_nomasmesa__PRhgwas126/mds_kingpc.ped"
+#df.mds<-read.table(mds_removed_indiv,header=TRUE)
+
+df.mds<-read.table(mds_nonremoved_indiv,header=FALSE)
 
 print(dim(df.mds))
 
