@@ -8,6 +8,7 @@
 #heatmap for PD data. Pick Pvalue based on your need
 #
 
+library(huex10sttranscriptcluster.db)
 library(dplyr)
 library(Cairo)
 library(gplots)
@@ -22,7 +23,7 @@ pheno<-read.table( "/mnt/mfs/hgrcgrid/shared/GT_ADMIX/PDexpression/sanjeev_analy
 row.names(pheno)<-pheno$IID
 
 file.expression<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/PDexpression/sanjeev_analyses/PD_RMAnormalized_core.txt"
-file.model_genes<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/PDexpression/sanjeev_analyses/gene_expr_rin_site_adjusted/model3_genes"
+file.model_genes<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/PDexpression/sanjeev_analyses/gene_expr_rin_site_adjusted/Model_genes/Model4/pvalue_adjusted_sorted"
 
 df.expression<-data.table::fread(file.expression, showProgress = TRUE,header=TRUE)
 print(dim(df.expression))
@@ -30,8 +31,26 @@ print(dim(df.expression))
 df.model.genes<-data.table::fread(file.model_genes, showProgress = TRUE,header=TRUE)
 print(dim(df.model.genes))
 
-pvalue_threshold<-0.005 #suit based on your need - model 1 and model 2 are good with this
-print(length(which(df.model.genes$Pvalue<pvalue_threshold)))
+df.model.genes<-df.model.genes[(which(df.model.genes$adjusted_category3<0.05)),]
+
+probe.annots <- AnnotationDbi::select(
+  x       = huex10sttranscriptcluster.db,
+  keys    =  as.character(df.model.genes$Probeset),
+  columns = c("PROBEID", "ENSEMBL", "ENTREZID", "SYMBOL"),
+  keytype = "PROBEID"
+  )
+
+collapser <- function(x){
+  x %>% unique %>% sort %>% paste(collapse = "|")
+  }  
+  
+  
+probe.annots<-probe.annots[complete.cases(probe.annots),]  
+probe.annots$PROBEID<-as.numeric(probe.annots$PROBEID)
+joinedpvalue_adjusted_probe.annot<-left_join(df.model.genes,probe.annots,by=c("Probeset"="PROBEID"))
+joinedpvalue_adjusted_probe.annot<-joinedpvalue_adjusted_probe.annot[complete.cases(joinedpvalue_adjusted_probe.annot),]
+
+#pvalue_threshold<-0.005 #suit based on your need - model 1 and model 2 are good with this
 
 genes_pvalue_threshold<- df.model.genes[which(df.model.genes$Pvalue<pvalue_threshold),]
 print(dim(genes_pvalue_threshold))
