@@ -5,9 +5,15 @@
 #Sanjeev Sariya
 #Take output from plink annotation for gene
 #
-#Input for sets in GMMAT
-#we have weight as 1
+#Input for sets in GMMAT rv tests #we have weight as 1
+#Output is a text file with prefix and path from user. This script is run per chromsome
+#plink.annot has removed SNPs with . gene annotation
+#
+#python parse_plinkannotation.py -i plink.annot -d ./ -p batch1_CHR1
 
+#
+" Python 2.7.13 (default, Jan 19 2017, 14:48:08)
+[GCC 6.3.0 20170118] on linux2 "
 import argparse,os
 
 if __name__=="__main__":
@@ -51,8 +57,7 @@ if __name__=="__main__":
                     for i in split_gene_array:
 
                         index=i.find('(') # find index of (
-                        gene_name=(i[0:index]).strip()
-                        
+                        gene_name=(i[0:index]).strip() #strip last space
                         #--make a string and print to out file
                         string_to_print=gene_name+"\t"+chromosome+"\t"+position+"\t"+ref_allele+"\t"+alt_allele+"\t"+"1"+"\n"
                         with open(output_file, 'a') as the_file:
@@ -62,8 +67,8 @@ if __name__=="__main__":
 
                     gene_annotated=space_array[3]
                     index=gene_annotated.find('(')
-                    gene_name=(gene_annotated[0:index]).strip()
-                    #print gene_name,chromosome,snp,ref_allele,alt_allele,"1"
+                    gene_name=(gene_annotated[0:index]).strip() #strip last space
+                    #print gene_name,pos,snp,ref_allele,alt_allele,"1"
                     string_to_print=gene_name+"\t"+chromosome+"\t"+position+"\t"+ref_allele+"\t"+alt_allele+"\t"+"1"+"\n"
                     with open(output_file, 'a') as the_file:
                         the_file.write(string_to_print)
