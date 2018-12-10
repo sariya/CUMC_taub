@@ -54,7 +54,7 @@ if __name__=="__main__":
                         gene_name=(i[0:index]).strip()
                         
                         #--make a string and print to out file
-                        string_to_print=gene_name+"\t"+chromosome+"\t"+snp+"\t"+ref_allele+"\t"+alt_allele+"\t"+"1"+"\n"
+                        string_to_print=gene_name+"\t"+chromosome+"\t"+position+"\t"+ref_allele+"\t"+alt_allele+"\t"+"1"+"\n"
                         with open(output_file, 'a') as the_file:
                                 the_file.write(string_to_print)
                 else:
@@ -64,7 +64,7 @@ if __name__=="__main__":
                     index=gene_annotated.find('(')
                     gene_name=(gene_annotated[0:index]).strip()
                     #print gene_name,chromosome,snp,ref_allele,alt_allele,"1"
-                    string_to_print=gene_name+"\t"+chromosome+"\t"+snp+"\t"+ref_allele+"\t"+alt_allele+"\t"+"1"+"\n"
+                    string_to_print=gene_name+"\t"+chromosome+"\t"+position+"\t"+ref_allele+"\t"+alt_allele+"\t"+"1"+"\n"
                     with open(output_file, 'a') as the_file:
                         the_file.write(string_to_print)
             
