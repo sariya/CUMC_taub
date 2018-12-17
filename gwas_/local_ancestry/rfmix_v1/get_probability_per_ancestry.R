@@ -11,8 +11,17 @@
 #The output has2Xinput admixed individuals columns
 #1- is NAT, 2 is CEU and 3- is Yurobian
 library(data.table)
+library("argparse")
+parser <- ArgumentParser(description="make ancetry from haps in rfmix v1 output")
+parser$add_argument('-v',"--vit",help="input viterbifile",required=TRUE) #
+parser$add_argument('-x',"--outpre",help="output prefix",required=TRUE) # prefix for output
+args <- parser$parse_args() #make it a data structure
 
-viterbi.file<-"againoutput.0.Viterbi.txt"
+viterbi.file<-args$vit
+prefix<-args$outpre
+
+
+#viterbi.file<-"againoutput.0.Viterbi.txt"
 df.viterbi<-fread(viterbi.file)
 print(nrow(df.viterbi))
 print(ncol(df.viterbi))
@@ -71,7 +80,7 @@ return(ancestry_mat)
 #get_ancestry function ends
 #############################################
 
-kk<-apply(df.viterbi[1:15,55:56] ,1,function(i)
+snp_ancestry_per_person<-apply(df.viterbi,1,function(i)
 {
 
 #--make data frame of row
@@ -81,7 +90,7 @@ iterate<-ncol(row_df)/2 #get variable to iterate over columns in a row
 
 #--iterate over columns
 ancestral_components<-sapply(1:iterate,function(index){
-t<-index*2
+t<-index*2 #t is used for index in a vector
 output_mat<-get_ancestry(row_df[t-1],row_df[t])
 return(output_mat)
 
@@ -91,5 +100,13 @@ return(ancestral_components)
 }
 )
 
-print(dim(kk))
+print(dim(snp_ancestry_per_person))
+print(dim(t(snp_ancestry_per_person)))
+
+outfile<-paste(prefix,".txt",sep="")
+write.table(t(snp_ancestry_per_person), file = outfile, append = FALSE, quote = FALSE, sep = "\t",row.names = FALSE,col.names = FALSE)
+
+print("check current working directory")
+
+
 
