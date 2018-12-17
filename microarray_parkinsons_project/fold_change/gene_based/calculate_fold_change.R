@@ -14,9 +14,9 @@
 #Read pheno data
 #Get case and controls calculate mean per gene in case, then calculate mean per gene in control
 
-#
-library(data.table)
-library(dplyr)
+#R 3.4.2
+library(data.table) #data.table 1.11.8 
+library(dplyr) #dplyr_0.7.7
 
 file.expression<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/PDexpression/sanjeev_analyses/gene_expr_rin_site_adjusted/PD_RMAnormalized_core.txt"
 file.pheno<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/PDexpression/sanjeev_analyses/gene_expr_rin_site_adjusted/pheno_rin_study"
@@ -45,5 +45,32 @@ names<-colnames(PDmerge)
 #
 
 #calculate mean of each gene for case and contol
-mean_case_control<-as.data.frame(PDmerge %>% group_by(PD) %>% summarise_at(vars(-IID, -CATEGORY, -SEX, -AGE, -PD, -LRKK2, -RIN, -FID, -STUDY), mean ))
+mean_case_control<-as.data.frame(PDmerge %>% group_by(PD) %>% summarise_at(vars(-AGE_SCALE, -IID, -CATEGORY, -SEX, -AGE, -PD, -LRKK2, -RIN, -FID, -STUDY), mean ))
+print(dim(mean_case_control))
+
+mean_case_control[3,]<-NA
+mean_case_control[3,2:ncol(mean_case_control)]<-mean_case_control[1,2:ncol(mean_case_control) ]- mean_case_control[2,2:ncol(mean_case_control) ]
+rownames(mean_case_control)<-c("Control","Case","logFC")
+
+transposed_logfc<-t(mean_case_control)
+transposed_logfc<-transposed_logfc[-c(1),]
+
+transposed_logfc<-as.data.frame(transposed_logfc)
+
+#https://www.statmethods.net/management/sorting.html
+sorted_transposed_logfc<- transposed_logfc[order(transposed_logfc$logFC),]
+
+
+#get mean age per group
+as.data.frame(PDmerge %>% group_by(PD) %>% summarise_at(vars(AGE), funs(mean(., na.rm = TRUE)) ) ) 
+#  PD      AGE
+#  0 58.06731
+#  1 69.04274
+
+#sd of age in case and control
+as.data.frame(PDmerge %>% group_by(PD) %>% summarise_at(vars(AGE), funs(sd(., na.rm = TRUE)) ) )
+#  PD       AGE
+#  0 17.862617
+#  1  9.695709
+
 
