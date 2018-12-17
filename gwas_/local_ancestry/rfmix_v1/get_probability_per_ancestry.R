@@ -4,12 +4,14 @@
 #
 #Sanjeev Sariya
 #PI Dr. Giuseppe Tosto
-#
-
+#Date 15 Dec 2018
+#PH 19
 #
 #RFmix 1.5.X
 #The output has2Xinput admixed individuals columns
-#1- is NAT, 2 is CEU and 3- is Yurobian
+#1- is NAT, 2 is CEU and 3- is Yurobian as the information in output  #--it depends how your input in class file is designed.  
+
+
 library(data.table)
 library("argparse")
 parser <- ArgumentParser(description="make ancetry from haps in rfmix v1 output")
@@ -100,11 +102,12 @@ return(ancestral_components)
 }
 )
 
+
 print(dim(snp_ancestry_per_person))
 print(dim(t(snp_ancestry_per_person)))
 
 outfile<-paste(prefix,".txt",sep="")
-write.table(t(snp_ancestry_per_person), file = outfile, append = FALSE, quote = FALSE, sep = "\t",row.names = FALSE,col.names = FALSE)
+write.table(t(snp_ancestry_per_person), file = outfile, append = FALSE, quote = FALSE, sep = "\t",row.names = FALSE,col.names = FALSE) #write to an output file
 
 print("check current working directory")
 
