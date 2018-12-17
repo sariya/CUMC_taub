@@ -17,6 +17,8 @@
 #R 3.4.2
 library(data.table) #data.table 1.11.8 
 library(dplyr) #dplyr_0.7.7
+library(huex10sttranscriptcluster.db) # huex10sttranscriptcluster.db_8.7.0 org.Hs.eg.db_3.5.0
+
 
 file.expression<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/PDexpression/sanjeev_analyses/gene_expr_rin_site_adjusted/PD_RMAnormalized_core.txt"
 file.pheno<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/PDexpression/sanjeev_analyses/gene_expr_rin_site_adjusted/pheno_rin_study"
@@ -59,10 +61,33 @@ transposed_logfc<-as.data.frame(transposed_logfc)
 
 #https://www.statmethods.net/management/sorting.html
 sorted_transposed_logfc<- transposed_logfc[order(transposed_logfc$logFC),]
+print(dim(sorted_transposed_logfc))
+
+sorted_transposed_logfc$PROBEID<-rownames(sorted_transposed_logfc) #use this in joining later
 
 ############################################################################
 #Get gene names 
 ############################################################################
+
+collapser <- function(x){
+x %>% unique %>% sort %>% paste(collapse = "|")
+}  
+
+#https://bioconductor.org/packages/devel/bioc/vignettes/AnnotationDbi/inst/doc/IntroToAnnotationPackages.pdf
+
+probe.annots  <- as.data.frame(AnnotationDbi::select(
+x       = huex10sttranscriptcluster.db,
+keys    = as.character( rownames(sorted_transposed_logfc)),
+columns = c("PROBEID", "ENSEMBL", "ENTREZID", "SYMBOL"),
+keytype = "PROBEID"  ) %>%
+group_by(PROBEID) %>% summarise_each(funs(collapser)) %>%   ungroup)
+  
+print(dim(probe.annots))
+probe.annots  <-probe.annots[which(probe.annots$SYMBOL!=""  ),] 
+
+
+subset( dplyr::left_join(sorted_transposed_logfc ,probe.annots,by = c("PROBEID")) , select=-c(ENTREZID)) # drop columns https://stackoverflow.com/questions/5234117/how-to-drop-columns-by-name-in-a-data-frame
+
 
 #get mean age per group
 as.data.frame(PDmerge %>% group_by(PD) %>% summarise_at(vars(AGE), funs(mean(., na.rm = TRUE)) ) ) 
