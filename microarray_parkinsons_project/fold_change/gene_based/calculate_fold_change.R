@@ -60,6 +60,9 @@ transposed_logfc<-as.data.frame(transposed_logfc)
 #https://www.statmethods.net/management/sorting.html
 sorted_transposed_logfc<- transposed_logfc[order(transposed_logfc$logFC),]
 
+############################################################################
+#Get gene names 
+############################################################################
 
 #get mean age per group
 as.data.frame(PDmerge %>% group_by(PD) %>% summarise_at(vars(AGE), funs(mean(., na.rm = TRUE)) ) ) 
