@@ -87,8 +87,8 @@ probe.annots  <-probe.annots[which(probe.annots$SYMBOL!=""  ),]
 
 # drop columns https://stackoverflow.com/questions/5234117/how-to-drop-columns-by-name-in-a-data-frame
 genenames_foldchange<-subset( dplyr::left_join(sorted_transposed_logfc ,probe.annots,by = c("PROBEID")) , select=-c(ENTREZID)) 
-
-write.table(genenames_foldchange,file="geneexpression.sorted_foldchange.tsv",sep="\t",append = FALSE, quote = FALSE, row.names = FALSE,col.names = TRUE)
+genenames_foldchange_noNAs<-genenames_foldchange[complete.cases(genenames_foldchange),]
+write.table(genenames_foldchange_noNAs,file="geneexpression.sorted_foldchange.tsv",sep="\t",append = FALSE, quote = FALSE, row.names = FALSE,col.names = TRUE)
 
 
 #get mean age per group
