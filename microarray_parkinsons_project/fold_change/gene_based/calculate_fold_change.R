@@ -60,7 +60,7 @@ transposed_logfc<-transposed_logfc[-c(1),]
 transposed_logfc<-as.data.frame(transposed_logfc)
 
 #https://www.statmethods.net/management/sorting.html
-sorted_transposed_logfc<- transposed_logfc[order(transposed_logfc$logFC),]
+sorted_transposed_logfc<- transposed_logfc[order(transposed_logfc$logFC),] #sort df
 print(dim(sorted_transposed_logfc))
 
 sorted_transposed_logfc$PROBEID<-rownames(sorted_transposed_logfc) #use this in joining later
@@ -85,8 +85,10 @@ group_by(PROBEID) %>% summarise_each(funs(collapser)) %>%   ungroup)
 print(dim(probe.annots))
 probe.annots  <-probe.annots[which(probe.annots$SYMBOL!=""  ),] 
 
+# drop columns https://stackoverflow.com/questions/5234117/how-to-drop-columns-by-name-in-a-data-frame
+genenames_foldchange<-subset( dplyr::left_join(sorted_transposed_logfc ,probe.annots,by = c("PROBEID")) , select=-c(ENTREZID)) 
 
-subset( dplyr::left_join(sorted_transposed_logfc ,probe.annots,by = c("PROBEID")) , select=-c(ENTREZID)) # drop columns https://stackoverflow.com/questions/5234117/how-to-drop-columns-by-name-in-a-data-frame
+write.table(genenames_foldchange,file="geneexpression.sorted_foldchange.tsv",sep="\t",append = FALSE, quote = FALSE, row.names = FALSE,col.names = TRUE)
 
 
 #get mean age per group
