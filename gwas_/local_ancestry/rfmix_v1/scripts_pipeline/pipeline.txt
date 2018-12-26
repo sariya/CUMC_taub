@@ -1,0 +1,128 @@
+
+##Get CM positions
+
+chr_inuse=17
+cp /mnt/mfs/hgrcgrid/shared/GT_ADMIX/reference_panels/1000G/IMPUTE2/Phase3/genetic_map_chr"$chr_inuse"_combined_b37.txt ./
+##
+mkdir  previous_files_elia
+##################################################################
+###Get data prepared for ELIA
+##################################################################
+
+cp /mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/local_ancestry_analysis/localancestry_analysis/imputed_snps_perchr/processing_post_gentoplink/plink_files_snpfiltering/CHR3_plink_exclude_updated.* ./
+
+##################################################################
+#work with cm positions first. 
+##################################################################
+awk '{print $1}' genetic_map_chr"$chr_inuse"_combined_b37.txt >cm_positions
+awk '{print $4,$2}'  previous_files_elia/CHR"$chr_inuse"_plink_exclude_updated.bim > positions_snps
+wc -l positions_snps
+
+###############
+###
+##############
+grep -Fwf  cm_positions positions_snps  >positions_snps_cmfound
+awk '{print $1}'  positions_snps_cmfound > positions_for_greppingrsids
+wc -l positions_for_greppingrsids
+
+grep -Fwf positions_for_greppingrsids  ../HAPMAP3hg19_unrelated_ceu_yri.bim | grep -w "^9" | awk '{ if($2 ~ "^rs"){  print $0  }  }' > found_rsids_for_positions
+
+awk '{print $1":"$4, $2}' found_rsids_for_positions > updatefor_plink
+
+#--get duplicates
+awk '{print $1}' updatefor_plink | sort | uniq -c | sort -k1,1 -nr | head
+
+plink --allow-no-sex --bfile previous_files_elia/CHR"$chr_inuse"_plink_exclude_updated --update-name updatefor_plink --make-bed --out CHR"$chr_inuse"_HGWAS_updated
+grep  "$chr_inuse:" CHR"$chr_inuse"_HGWAS_updated.bim  | awk '{print $2}' >throwsnps
+
+plink --allow-no-sex --bfile CHR"$chr_inuse"_HGWAS_updated --exclude throwsnps --make-bed --out CHR"$chr_inuse"_HGWAS_updated_thrownsnps
+awk '{print $2}' CHR"$chr_inuse"_HGWAS_updated_thrownsnps.bim > common_rsids
+
+###################################################
+#----work with HGDP data- update and extract 
+###################################################
+awk '{print $1":"$4}' CHR"$chr_inuse"_HGWAS_updated_thrownsnps.bim  >extract_hgdp
+awk '{print $1":"$4,$2}' CHR"$chr_inuse"_HGWAS_updated_thrownsnps.bim  >extract_hgdp_update
+
+plink --allow-no-sex --bfile ../HGDP_unrelated-1_hg19_native --extract extract_hgdp --make-bed --out HGDP_common_rsids_CHR"$chr_inuse"
+plink --allow-no-sex --bfile HGDP_common_rsids_CHR"$chr_inuse" --update-name extract_hgdp_update --make-bed --out HGDP_common_rsids_updated_CHR"$chr_inuse"
+
+#############
+###Work with CEU YRI data
+#############
+
+plink --allow-no-sex --bfile ../HAPMAP3hg19_unrelated_ceu_yri --extract common_rsids --make-bed --out HAPMAP3hg19_unrelated_ceu_yri_common_CHR"$chr_inuse"
+
+#############
+###merge data
+#############
+
+plink --allow-no-sex --bfile CHR"$chr_inuse"_HGWAS_updated_thrownsnps --bmerge HGDP_common_rsids_updated_CHR"$chr_inuse" --make-bed --out hgwas.hgdp.CHR"$chr_inuse"
+plink --bfile HGDP_common_rsids_updated_CHR"$chr_inuse" --flip hgwas.hgdp.CHR"$chr_inuse"-merge.missnp --make-bed --out HGDP_common_rsids_updated_flipped_CHR"$chr_inuse" 
+plink --allow-no-sex --bfile CHR"$chr_inuse"_HGWAS_updated_thrownsnps --bmerge HGDP_common_rsids_updated_flipped_CHR"$chr_inuse" --make-bed --out hgwas.hgdp.CHR"$chr_inuse"
+plink --allow-no-sex --bfile  hgwas.hgdp.CHR"$chr_inuse" --bmerge HAPMAP3hg19_unrelated_ceu_yri_common_CHR"$chr_inuse" --make-bed --out hgwas.hgdp.ceuyri_CHR"$chr_inuse"
+
+plink --bfile hgwas.hgdp.ceuyri_CHR"$chr_inuse" --indiv-sort file sort_individuals --make-bed --out hgwas.hgdp.ceuyri_sorted_CHR"$chr_inuse"
+
+#############################
+##Align data#################
+#############################
+
+qsub -cwd -N checkCHR"$chr_inuse"al \
+-l h_vmem=25G \
+-b y /home/ss5505/bin/shapeit -check -B hgwas.hgdp.ceuyri_sorted_CHR"$chr_inuse" \
+-M /mnt/mfs/hgrcgrid/shared/GT_ADMIX/reference_panels/1000G/IMPUTE2/Phase3/genetic_map_chr"$chr_inuse"_combined_b37.txt \
+--input-ref /mnt/mfs/hgrcgrid/shared/GT_ADMIX/reference_panels/1000G/IMPUTE2/Phase3/1000GP_Phase3_chr"$chr_inuse".hap.gz \
+/mnt/mfs/hgrcgrid/shared/GT_ADMIX/reference_panels/1000G/IMPUTE2/Phase3/1000GP_Phase3_chr"$chr_inuse".legend.gz \
+/mnt/mfs/hgrcgrid/shared/GT_ADMIX/reference_panels/1000G/IMPUTE2/Phase3/1000GP_Phase3.sample \
+--output-log "alignchr"$chr_inuse""
+
+#############################
+####Phase      ##############
+#############################
+
+qsub -cwd -N phaseCHR"$chr_inuse" \
+-l h_vmem=35G -b y /home/ss5505/bin/shapeit \
+-B hgwas.hgdp.ceuyri_sorted_CHR"$chr_inuse" \
+-M /mnt/mfs/hgrcgrid/shared/GT_ADMIX/reference_panels/1000G/IMPUTE2/Phase3/genetic_map_chr"$chr_inuse"_combined_b37.txt \
+--input-ref /mnt/mfs/hgrcgrid/shared/GT_ADMIX/reference_panels/1000G/IMPUTE2/Phase3/1000GP_Phase3_chr"$chr_inuse".hap.gz \
+/mnt/mfs/hgrcgrid/shared/GT_ADMIX/reference_panels/1000G/IMPUTE2/Phase3/1000GP_Phase3_chr"$chr_inuse".legend.gz \
+/mnt/mfs/hgrcgrid/shared/GT_ADMIX/reference_panels/1000G/IMPUTE2/Phase3/1000GP_Phase3.sample \
+--duohmm --output-graph HGWAS_HGDP_HAPMAP_CHR"$chr_inuse""phased-duohmm.graph" \
+--output-max HGWAS_HGDP_HAPMAP_CHR"$chr_inuse""phased-duohmm" --thread 16 --seed 123456789  -W 5 
+
+
+#############################
+####Prepare class file#######
+#############################
+
+t=""
+for i in {1..21516} # double of input admix people because it is haplotype
+do
+t=$t"0 "
+done
+#--0 is admixed
+for i in {1..128}
+do
+t=$t"1 "
+done
+#1-- NAT
+for i in {1..224}
+do
+t=$t"2 "
+done
+#2--- is CEU
+
+for i in {1..220}
+do
+t=$t"3 "
+done
+#3 is Yurobian
+printf "$t\n" > classfile
+
+
+
+
+
+
+
