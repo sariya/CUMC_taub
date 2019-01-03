@@ -11,10 +11,11 @@
 #
 
 library(WGCNA)
+library(Cairo)
 enableWGCNAThreads()
 options(stringsAsFactors = FALSE)
 
-exprs_data<-read.table("duplicate_genes_summed",header=TRUE)
+exprs_data<-read.table("complete_genes_mapped",header=TRUE)
 print(dim(exprs_data))
 
 #transpose the expression data
@@ -30,6 +31,7 @@ print(data_exprs.cleaned[1:10,1:10])
 #check data for excessive missing values and identi_cation of outlier microarray
 gsg = goodSamplesGenes(data_exprs.cleaned, verbose = 3);
 
+#--everything OK with mapped genes
 if (!gsg$allOK)
 {
 # Optionally, print the gene and sample names that were removed:
@@ -47,14 +49,24 @@ sampleTree = hclust(dist(data_exprs.cleaned ), method = "average");
 # Plot the sample tree: 
 # The user should change the dimensions if the window is too large or too small.
 
-#CairoPDF("sample_outliers_tree.pdf",width=12,height=9)
+
 CairoJPEG("sample_outliers_tree.jpeg",width=1200,height=900)
 par(cex = 0.6);
 par(mar = c(0,4,2,0))
 plot(sampleTree, main = "Sample clustering to detect outliers", sub="", xlab="", cex.lab = 1.5,cex.axis = 1.5, cex.main = 2)
+abline(h=90, col = "red")
 dev.off()
 
 print("Printed JPEG file for sample tree to see outlier")
+
+labels_def = cutreeStatic(sampleTree, cutHeight = 95)  #--default cluster size is 50
+table(labels_def )
+keepSamples = (labels_def==1)
+
+datExpr = data_exprs.cleaned [keepSamples, ]
+nGenes = ncol(data_exprs.cleaned )
+nSamples = nrow(data_exprs.cleaned )
+
 
 ##################################################################
 #Automatic, one-step network construction and module detection:
