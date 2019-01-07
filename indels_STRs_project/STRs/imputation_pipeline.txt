@@ -22,7 +22,6 @@ do
 qsub -cwd -N bcf"$i" -l h_vmem=55G -b y /home/ss5505/bin/bcftools_soft/install/bin/bcftools view -r chr"$i" phase_1_final_calls.vcf.gz   -o CHR"$i"_1000G.vcf
 
 done
-Rscript run_gmmat_model1.R -g /mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/rare_variants_allbatches/pedigree_reconstruction/filtered_imputedfiles/batch6/convert_plink_togds/batch6_CHR22.gds -p /mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/rare_variants_allbatches/pedigree_reconstruction/filtered_imputedfiles/batch6/gmmat_analyses/input_phenotypes/pheno_batch6.txt -x model1rv_CHR22 -m /mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/rare_variants_allbatches/pedigree_reconstruction/filtered_imputedfiles/batch6/kinship_gemma/output/result.cXX.txt -s /mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/rare_variants_allbatches/pedigree_reconstruction/filtered_imputedfiles/batch6/find_snp_groups_annotated/batch6_CHR22groupfile.txt
 
 awk '{
 
