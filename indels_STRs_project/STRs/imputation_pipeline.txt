@@ -55,12 +55,3 @@ bash /mnt/mfs/hgrcgrid/homes/ss5505/scripts_cumc/gwas_/imputation_scripts/impute
 -d /mnt/mfs/hgrcgrid/shared/GT_ADMIX/reference_panels/STRs/1000G/impute_CHR22_STRs/CHR22_STRs_max-duohmm.haps  \
 -o /mnt/mfs/hgrcgrid/shared/GT_ADMIX/reference_panels/STRs/1000G/impute_CHR22_STRs -c CHR22
 
-
-/mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/rare_variants_allbatches/pedigree_reconstruction/filtered_imputedfiles/batch3/find_snp_groups_annotated/copy_data
-
-for i in {1..22}
-do
-printf "batch1_CHR"$i"groupfile.txt\n"
-
-mv "batch1_CHR"$i"groupfile.txt" "batch3_CHR"$i"groupfile.txt"
-done
