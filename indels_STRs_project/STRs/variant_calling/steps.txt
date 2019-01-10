@@ -1,0 +1,47 @@
+#-date 01/08/2019
+
+#
+#Version: 1.9 (using htslib 1.9)
+#
+#--work on symbolik links
+
+#--create index
+
+samtools index -c 47842BL1.final.bam
+
+#--get index
+qsub -cwd \
+-l h_vmem=20G \
+-b y /usr/local/bin/samtools view 47842BL1.final.bam 22  -b -o CHR22_47842BL1.bam
+
+
+#--make sure the bam files are sorted
+# samtools view -H CHR22_47842BL1.bam
+#@HD     VN:1.4  GO:none SO:coordinate
+
+
+#if unsorted then SO:unsorted https://www.biostars.org/p/5256/
+samtools view -H CHR22_47842BL1.bam
+
+
+#https://github.com/tfwillems/HipSTR#data-requirements
+
+git clone https://github.com/HipSTR-Tool/HipSTR
+cd HipSTR
+
+make
+
+
+#####BED file
+
+https://github.com/HipSTR-Tool/HipSTR-references/raw/master/human/hg19.hipstr_reference.bed.gz
+
+wget https://github.com/HipSTR-Tool/HipSTR-references/raw/master/human/hg19.hipstr_reference.bed.gz
+
+gunzip hg19.hipstr_reference.bed.gz
+
+grep "^chr22" hg19.hipstr_reference.bed > hg19.hipstr_reference_CHR22.bed
+
+
+wc -l hg19.hipstr_reference_CHR22.bed
+24142 hg19.hipstr_reference_CHR22.bed
