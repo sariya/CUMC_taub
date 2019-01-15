@@ -72,23 +72,24 @@ if __name__=="__main__":
 
                         ##with open(output_file, 'a') as the_file:
                         ##  the_file.write(string_to_print)
+                else:
+                    #{ if line doesn't have |
+                    #--that is only single SNP present in the gene
+                    
+                    gene_annotated=space_array[3]
+                    index=gene_annotated.find('(')
+                    gene_name=(gene_annotated[0:index]).strip() #strip last space
+                    
+                    #string_to_print=gene_name+"\t"+chromosome+"\t"+position+"\t"+ref_allele+"\t"+alt_allele+"\t"+"1"+"\n"
+                    store_dict_string=chromosome+":"+position+"_"+ref_allele+"/"+alt_allele
+                    
+                    if not gene_name in gene_snp.keys():
+                        gene_snp[gene_name]=store_dict_string
                     else:
-                        #{ if line doesn't have |
+                        temp_st=gene_snp[gene_name]
+                        temp_st=temp_st+"\t"+store_dict_string
                         
-                        gene_annotated=space_array[3]
-                        index=gene_annotated.find('(')
-                        gene_name=(gene_annotated[0:index]).strip() #strip last space
-                        
-                        #string_to_print=gene_name+"\t"+chromosome+"\t"+position+"\t"+ref_allele+"\t"+alt_allele+"\t"+"1"+"\n"
-                        store_dict_string=chromosome+":"+position+"_"+ref_allele+"/"+alt_allele
-                        
-                        if not gene_name in gene_snp.keys():
-                            gene_snp[gene_name]=store_dict_string
-                        else:
-                            temp_st=gene_snp[gene_name]
-                            temp_st=temp_st+"\t"+store_dict_string
-                            
-                            gene_snp[gene_name]=temp_st
+                        gene_snp[gene_name]=temp_st
 
                 #----if check ends for |
                         
