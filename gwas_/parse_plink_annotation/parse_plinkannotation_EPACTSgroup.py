@@ -12,6 +12,7 @@
 #python parse_plinkannotation_EPACTSgroup.py -i plink.annot -d ./ -p batch1_CHR1
 #
 
+from pprint import pprint
 import argparse,os
 if __name__=="__main__":
     
@@ -24,7 +25,7 @@ if __name__=="__main__":
     input_file=os.path.abspath(args_dict['inp_annot'])
     output_dir=os.path.abspath(args_dict['dir_out'])
     prefix_output=args_dict['prefix_output']
-
+    output_file=output_dir+"/"+prefix_output+"groupfile.txt"
     gene_snp={} ##use this dict later on
     
     with open(input_file) as handle:
@@ -56,11 +57,19 @@ if __name__=="__main__":
                         gene_name=(i[0:index]).strip() #strip last space
                         #--make a string and print to out file
                         string_to_print=gene_name+"\t"+chromosome+":"+position+"_"+ref_allele+"/"+alt_allele
-                        
+                        store_dict_string=chromosome+":"+position+"_"+ref_allele+"/"+alt_allele
                         ##
                         ##Check gene exists
                         ##
-                        print string_to_print
+                        if not gene_name in gene_snp.keys():
+
+                            gene_snp[gene_name]=store_dict_string
+                        else:
+                            temp_st=gene_snp[gene_name]
+                            temp_st=temp_st+"\t"+store_dict_string
+                            
+                            gene_snp[gene_name]=temp_st
+
                         ##with open(output_file, 'a') as the_file:
                         ##  the_file.write(string_to_print)
                     else:
@@ -76,5 +85,9 @@ if __name__=="__main__":
                 #----if check ends for |
                         
             #--if : ends
-        
-                        
+	print len(gene_snp)
+	
+	for i in gene_snp:
+		st= i+"\t"+gene_snp[i]+"\n"
+                with open(output_file, 'a') as the_file:
+                   the_file.write(st)
