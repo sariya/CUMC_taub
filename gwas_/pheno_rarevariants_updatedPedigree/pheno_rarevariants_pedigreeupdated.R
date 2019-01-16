@@ -11,11 +11,21 @@
 #work with each batch individually
 #
 
+#
+#
+# Rscript  /mnt/mfs/hgrcgrid/homes/ss5505/scripts_cumc/gwas_/pheno_rarevariants_updatedPedigree/pheno_rarevariants_pedigreeupdated.R 
+# -o working_files/updateids_new -k working_files/kingbatch3updateids.txt 
+# -p /mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/local_ancestry_analysis/localancestry_analysis/input_phenotypes/mergedmds_oldnewIIDs_order_PCsKept_10302018 
+# -x batch3
+#
+#
+#
+
 library("argparse")
 library(dplyr)
 parser <- ArgumentParser(description="merge pheno after king updated")
 
-parser$add_argument('-o',"--oldids",help="ids from clinical geneticas",required=TRUE) #file - that has FID-iid
+parser$add_argument('-o',"--oldids",help="ids from clinical genetics",required=TRUE) #file - that has FID-iid
 parser$add_argument('-k',"--kingids",help="ids updated by king",required=TRUE) #file output from king
 parser$add_argument('-p',"--pheno",help="pheno based on old ids",required=TRUE) #file old iid FID pheno
 parser$add_argument('-x',"--outpre",help="output prefix",required=TRUE) # prefix for output
