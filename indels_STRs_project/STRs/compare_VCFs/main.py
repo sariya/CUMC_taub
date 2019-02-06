@@ -3,7 +3,10 @@
 #
 #Date 02-05-2019
 #Sanjeev Sariya
-#
+
+
+#Name: PyVCF
+#Version: 0.6.8
 
 #
 #This script somehow doesn't give INFO string in VCF. Weird. :(
@@ -33,8 +36,7 @@ def get_pos(temp_vcffile):
         pos_store.add(record.POS)
     #--for loop end
 
-    print len(pos_store)
-    return len(pos_store)
+    return (pos_store)
     #---------------------
     #func ends
     #-----------------------    
@@ -46,7 +48,12 @@ if __name__=="__main__":
     
     sitepos_imputation=get_pos(imputed_vcf_file) #get site position in a set
     sitepos_vcalled=get_pos(called_file_vcf)
-
+    print(type(sitepos_vcalled))
+    print(len(sitepos_vcalled))
+    print(type(sitepos_imputation))
+    print(len(sitepos_imputation))
+    valuuuu=(sitepos_imputation).intersection(sitepos_vcalled)
+    print len(valuuuu)
 
     print "Done reading"
 
