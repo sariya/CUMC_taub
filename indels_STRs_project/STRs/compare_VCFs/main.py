@@ -21,7 +21,10 @@
 #[GCC 6.3.0 20170118] on linux2
 #
 
+# fuzzywuzzy  Version: 0.17.0
+
 import vcf
+import fuzzywuzzy
 
 def get_pos(temp_vcffile):
     
@@ -47,11 +50,12 @@ if __name__=="__main__":
     called_file_vcf="/mnt/mfs/hgrcgrid/shared/GT_ADMIX/INDEL_comparisons/bam_files_processing_STR/compare_VCFs/normalized_CHR22_STR_fixedVersion.vcf.gz"    
     
     sitepos_imputation=get_pos(imputed_vcf_file) #get site position in a set
+    print "Sites for imputation completed"
     sitepos_vcalled=get_pos(called_file_vcf)
-    print(type(sitepos_vcalled))
+    print "Sites for seq completed"
     print(len(sitepos_vcalled))
-    print(type(sitepos_imputation))
     print(len(sitepos_imputation))
+    
     valuuuu=(sitepos_imputation).intersection(sitepos_vcalled)
     print len(valuuuu)
 
