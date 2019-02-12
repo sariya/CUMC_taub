@@ -1,7 +1,7 @@
 #!/bin/Rscript
 
 
-#Prepare data for MIXSCORE. Make Thrre-way admix
+#Prepare data for MIXSCORE version 1.3. Make Thrre-way admix
 #We're making CEU as our reference population. If two copies are found then 2 as value in matrix. If none than 0
 #We'are making NAT and YRI as one component. CEU against NAT+YRI . 
 #
@@ -40,6 +40,8 @@ print(ncol(df.viterbi))
 get_ancestry<-function(x,y){
 #1- is NAT, 2 is CEU and 3- is Yurobian
 
+#We make onlt one by one matrix. Because We need to get count of alleles from CEU ancestry (reference population)
+#
 ancestry_mat<-matrix(0,nrow = 1, ncol = 1)
 
 #--if 100% from one ancestry
