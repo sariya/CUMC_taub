@@ -9,12 +9,11 @@
 #Version: 0.6.8
 
 #
-#This script somehow doesn't give INFO string in VCF. Weird. :(
-#Both these VCFs are normalized for multi-alleles
+#Maintain INFO string by recode-all-Info flag in vcftools. 
+#Both these may or may not be multi-allelic. Depends on code and day you're doing. 
 #This script assumes data are cleaned, filtered for calling rate, depth, MAF and other metrics necessay to
 #perform analysis
 #Takes two VFs - plink VCF from imputation and VCF from STR called.
-#
 
 #
 #Python 2.7.13 (default, Jan 19 2017, 14:48:08)
@@ -23,8 +22,7 @@
 
 # fuzzywuzzy  Version: 0.17.0
 
-import vcf
-import fuzzywuzzy
+import vcf,sys
 
 def get_pos(temp_vcffile):
     
@@ -37,6 +35,7 @@ def get_pos(temp_vcffile):
     
     for record in vcf_reader_impute:
         pos_store.add(record.POS)
+
     #--for loop end
 
     return (pos_store)
@@ -46,15 +45,16 @@ def get_pos(temp_vcffile):
 
 if __name__=="__main__":
 
-    imputed_vcf_file="/mnt/mfs/hgrcgrid/shared/GT_ADMIX/INDEL_comparisons/bam_files_processing_STR/compare_VCFs/plink_updated_ids_STRs_68_0.8.vcf.gz"    
-    called_file_vcf="/mnt/mfs/hgrcgrid/shared/GT_ADMIX/INDEL_comparisons/bam_files_processing_STR/compare_VCFs/normalized_CHR22_STR_fixedVersion.vcf.gz"    
-    
+    imputed_vcf_file="/mnt/mfs/hgrcgrid/shared/GT_ADMIX/INDEL_comparisons/IMPUTED_CHR22_batch2/plink_STRs_68_0.4.vcf"    
+    called_file_vcf="/mnt/mfs/hgrcgrid/shared/GT_ADMIX/INDEL_comparisons/bam_files_processing_STR/comparevcfs/updated_ids68.vcf"
+
     sitepos_imputation=get_pos(imputed_vcf_file) #get site position in a set
-    print "Sites for imputation completed"
-    sitepos_vcalled=get_pos(called_file_vcf)
-    print "Sites for seq completed"
-    print(len(sitepos_vcalled))
     print(len(sitepos_imputation))
+    print "Sites for imputation completed"
+    
+    sitepos_vcalled=get_pos(called_file_vcf)
+    print(len(sitepos_vcalled))
+    print "Sites for seq completed"
     
     valuuuu=(sitepos_imputation).intersection(sitepos_vcalled)
     print len(valuuuu)
