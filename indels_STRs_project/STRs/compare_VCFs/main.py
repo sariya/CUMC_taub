@@ -8,7 +8,7 @@
 #Name: PyVCF
 #Version: 0.6.8
 
-#
+#Imptuation data are reference and for which comparisons are made
 #Maintain INFO string by recode-all-Info flag in vcftools. 
 #Both these may or may not be multi-allelic. Depends on code and day you're doing. 
 #This script assumes data are cleaned, filtered for calling rate, depth, MAF and other metrics necessay to
