@@ -56,9 +56,17 @@ if __name__=="__main__":
     print(len(sitepos_vcalled))
     print "Sites for seq completed"
     
-    valuuuu=(sitepos_imputation).intersection(sitepos_vcalled)
-    print len(valuuuu)
+    overlapped_sites=(sitepos_imputation).intersection(sitepos_vcalled)
+    my_overlapped_list = list(overlapped_sites) #convert set into list to access elements # https://stackoverflow.com/a/32512277/2740831
+    print len(my_overlapped_list)
+    print my_overlapped_list[1:5]
 
+    #
+    #work on element in impute but not in VCF called https://stackoverflow.com/a/50559206/2740831
+    #
+    
     print "Done reading"
+
+    
 
 ##
