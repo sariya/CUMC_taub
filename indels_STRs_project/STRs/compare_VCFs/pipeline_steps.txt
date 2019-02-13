@@ -1,0 +1,89 @@
+
+#
+#Date 01/25/2019
+#Sanjeev Sariya
+#
+
+#
+#Updated on 02/12/2019
+#
+
+#--get missingness
+vcftools --gzvcf str_calls_38Fams_toolStutter.vcf.gz  --missing-site  -c  | awk '{if($6>0.2){print 22,$2}}' > throw_sites
+
+vcftools --gzvcf  str_calls_38Fams_toolStutter.vcf.gz --site-mean-depth \
+-c | sort -k3,3 -n | awk '{if(FNR>1 && $3 < 10){print 22,$2}}' > sites_meanlessthan10
+
+cat sites_meanlessthan10 throw_sites | sort -u > unique_throwsites
+
+vcftools --gzvcf str_calls_38Fams_toolStutter.vcf.gz --exclude-positions  unique_throwsites --recode \
+--recode-INFO-all --out str_calls_38Fams_toolStutter.missingnessdepth
+
+
+#--remove sites with less than 90% post probabilities, with 15% as indel and 15% stutter 
+python /mnt/mfs/hgrcgrid/shared/GT_ADMIX/INDEL_comparisons/tools_STRs/hipSTR/HipSTR/scripts/filter_vcf.py \
+ --vcf str_calls_38Fams_toolStutter.missingnessdepth.recode.vcf --min-call-qual 0.9 --max-call-flank-indel  0.15 \
+--max-call-stutter 0.15 --min-call-allele-bias -2 --min-call-strand-bias -2 > filtered_sites_STRs38Fams.vcf
+
+#extract people with overlap in batch2
+vcftools --vcf filtered_sites_STRs38Fams.vcf --keep keep_individuals.txt --recode --recode-INFO-all --out  batch2_68_toolStutter
+
+#--look at ids 
+bcftools query -l batch2_68_toolStutter.recode.vcf > samplenames
+
+#--use reheader from bcftools
+bcftools reheader batch2_68_toolStutter.recode.vcf --samples update_usingbamtools --output updated_ids68.vcf
+
+##--filter sites with no alternate allele 
+#Should I remove monomorphic sites????
+grep -v "#" updated_ids68.vcf  | cut -f 1-5 | awk '{if ($5!="."){print $3}}'  > snps_with_alt_allele
+grep -v "#" updated_ids68.vcf  | cut -f 1-5 | awk '{if ($5=="."){print $3}}'  > snps_with_noalt_allele
+
+
+####zip them
+bgzip -c ../updated_ids68.vcf > updated_ids68.vcf.gz
+
+bgzip -c ../../IMPUTED_CHR22_batch2/plink_STRs_68_0.8.vcf > plink_STRs_68_0.8.vcf.gz
+
+tabix -p vcf plink_STRs_68_0.8.vcf.gz ; tabix -p vcf updated_ids68.vcf.gz
+
+#
+#Normalize my data from CHR22 STrs
+#https://samtools.github.io/bcftools/bcftools.html#norm
+#--left normalize variant called STRs
+bcftools norm -m- updated_ids68.vcf.gz  --output-type v  --output normalized_CHR22_STR.vcf
+
+cat ../../IMPUTED_CHR22_batch2/plink_STRs_68_0.8.vcf | sed 's/^##fileformat=VCFv4.2/##fileformat=VCFv4.1/'  > plink_STRs_68_0.8_versionFixed.vcf
+
+
+
+
+java -jar /mnt/mfs/cluster/bin/GATK/GenomeAnalysisTK.jar --analysis_type GenotypeConcordance  -eval normalized_CHR22_STR.vcf -comp plink_STRs_68_0.8_versionFixed.vcf   -o GATK
+
+
+##
+vcf-isec -f -o -n =2 normalized_CHR22_STR_fixedVersion.vcf.gz plink_updated_ids_STRs_68_0.8.vcf.gz | grep -v "#" | less
+vcf-isec -f -o -n =2 normalized_CHR22_STR_fixedVersion.vcf.gz plink_updated_ids_STRs_68_0.8.vcf.gz | grep -v "#" | wc -l #15545
+
+
+###against plink -----This is reference
+vcf-isec -f -o plink_updated_ids_STRs_68_0.8.vcf.gz normalized_CHR22_STR_fixedVersion.vcf.gz  | grep -v "#" | wc -l #10386 
+
+
+#
+#Get allele frequency
+#
+
+vcftools --vcf normalized_CHR22_STR_fixedVersion.vcf --freq --out STR_freq
+
+
+vcftools --gzvcf updated_ids68.vcf.gz  --site-mean-depth --out unnormsite_depth_summarymean
+#
+#
+#
+bcftools norm -m- 1kg.snp.str.chr22.vcf.gz --output-type z  --output multi_allelics_CHR22.vcf
+
+
+vcf2bed --deletions < normalized_CHR22_STR.vcf > STRs_deletions.bed
+vcf2bed --snvs < normalized_CHR22_STR.vcf > STRs_snvs.bed
+bedops --everything STRs_{deletions,snvs}.bed > dels_SNVs.bed
