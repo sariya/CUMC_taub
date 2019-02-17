@@ -1,12 +1,15 @@
 #!/bin/Rscript
 
 #
-#Date 09 13 2018
+#update 02 17 2018
 #Sanjeev Sariya
 #
 #Perform WGCNA using data from Dr. Amanda Myers. 
 #https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/
 
+#
+#We work with Amanda myers data 363 individuals. We clean samples and we clean genes
+#
 #Tutorial at: #http://pklab.med.harvard.edu/scw2014/WGCNA.html##################
 #
 
