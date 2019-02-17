@@ -165,8 +165,8 @@ gene.names<-colnames(datExpr_cleaned_greycolor)
 #gene.names<-colnames(datExpr)
 SubGeneNames<-gene.names
 
-
 dynamiccolors_nogrey<-dynamicColors[dynamicColors!="grey"]
+#make sure to use no grey colors. Otherwise we get NA in modules 
 
 module_colors= setdiff(unique(dynamicColors), "grey")
 for (color in module_colors){
@@ -280,11 +280,9 @@ ModuleSignificance$color<-row.names(ModuleSignificance)
 
 ModuleSignificance<- ModuleSignificance[,c(2,1)]
 
-
 #versions of libraries
 ## dplyr_0.7.8           Cairo_1.5-9           WGCNA_1.62
 ## fastcluster_1.1.25    dynamicTreeCut_1.63-1
-
 
 ##########
 
