@@ -212,6 +212,10 @@ dev.off()
 merge = mergeCloseModules(datExpr_cleaned_greycolor, dynamiccolors_nogrey, cutHeight = 0.30, verbose = 3) #we have 40 gene modules
 length(merge$colors) #19499 - after excluding grey color
 
+#
+#After merging we get only 20 unique colors
+#
+
 ##merge = mergeCloseModules(data_exprs.cleaned, dynamicColors, cutHeight = 0.30, verbose = 3)
 # The merged module colors
 mergedColors = merge$colors;
