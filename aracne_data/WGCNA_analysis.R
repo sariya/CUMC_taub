@@ -280,6 +280,15 @@ ModuleSignificance$color<-row.names(ModuleSignificance)
 
 ModuleSignificance<- ModuleSignificance[,c(2,1)]
 
+
+#versions of libraries
+## dplyr_0.7.8           Cairo_1.5-9           WGCNA_1.62
+## fastcluster_1.1.25    dynamicTreeCut_1.63-1
+
+
+##########
+
+###Don't go below this section
 CairoJPEG("merged_colors_threshold.jpeg",height=900,width=1000,quality=75)
 plotDendroAndColors(geneTree, cbind(dynamicColors, mergedColors), c("Dynamic Tree Cut", "Merged dynamic"), dendroLabels = FALSE, hang = 0.03, addGuide = TRUE, guideHang = 0.05)
 dev.off()
