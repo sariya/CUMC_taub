@@ -282,6 +282,24 @@ ModuleSignificance$color<-row.names(ModuleSignificance)
 
 ModuleSignificance<- ModuleSignificance[,c(2,1)]
 
+
+##Signed and unsigned correlations#
+# We first plot correlation heatmaps for signed network:
+plotNetworkHeatmap(datExpr, plotGenes = gene.names,networkType="signed", useTOM=FALSE, power=1, main="signed correlations")
+
+#The next plot will show the correlation in the corresponding unsigned network:
+plotNetworkHeatmap(datExpr, plotGenes = gene.names,networkType="unsigned", useTOM=FALSE,power=1, main="signed correlations")
+
+#We now plot the corresponding topological overlap heatmaps:
+sizeGrWindow(7,7)
+
+# The following shows the TOM heatmap in a signed network
+plotNetworkHeatmap(datExpr, plotGenes = gene.names, networkType="signed", useTOM=TRUE, power=12, main="C. TOM in a signed network")
+
+# The following shows the TOM heatmap in a unsigned network
+plotNetworkHeatmap(datExpr, plotGenes = gene.names, networkType="unsigned", useTOM=TRUE, power=6, main="D. TOM in an unsigned network")
+
+
 #versions of libraries
 ## dplyr_0.7.8           Cairo_1.5-9           WGCNA_1.62
 ## fastcluster_1.1.25    dynamicTreeCut_1.63-1
