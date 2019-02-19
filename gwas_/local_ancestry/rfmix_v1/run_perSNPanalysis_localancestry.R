@@ -11,3 +11,74 @@
 #Local ancestry is home-made from RFmix viterbi file. 
 #Total columns would be N_people multipleid by 3. Three - CEU/YRI/NAT
 #
+
+library(data.table)
+
+ancestry.file<-"components_CHR22_rfmix.txt" # this is space sep
+snp.file<-"CHR22_snps_rfmix" #this is comma sep 
+phenotype.file<-"input_pheno_global_ancestry.txt"
+
+df.haplotype_ancestry<-data.table::fread(ancestry.file, showProgress = TRUE)  #no header by default. Header =FALSE
+df.snps<-data.table::fread(snp.file,sep=",", showProgress = TRUE,header=FALSE)  #no header by default. Header =FALSE
+df.phenotype<-data.table::fread(phenotype.file, showProgress = TRUE,header=TRUE)  #no header by default. Header =FALSE
+
+print(dim(df.haplotype_ancestry))
+print(dim(df.phenotype))
+print(dim(df.snps))
+nrow(df.snps)
+
+tempdf<-""
+#
+#Take one SNP at a time. Break it's data into per person. Then remove CEU column
+#
+for (i in 1:nrow(df.snps)){
+print(paste(df.snps[i,1] ,i,sep="    "))
+##print(df.haplotype_ancestry[i,])
+print(dim(df.haplotype_ancestry[i,]))
+
+temp_snpmatrix<-as.data.frame(matrix(df.haplotype_ancestry[i,], ncol=3, byrow=TRUE)) ###https://stackoverflow.com/questions/26973029/split-one-row-after-every-3rd-column-and-transport-those-3-columns-as-a-new-row
+
+print(dim(temp_snpmatrix))
+print(head(temp_snpmatrix))
+
+##First column is NAT, #
+#2nd is CEU,  #3rd is YRI column in haplotype SNP matrix#
+
+#remove CEU column. We work with only two columns nows
+temp_snpmatrix<-temp_snpmatrix[,-c(2)] 
+print(dim(temp_snpmatrix))
+
+phenosnp_cov<-cbind(temp_snpmatrix,df.phenotype)
+print(head(phenosnp_cov))
+print(class(phenosnp_cov))
+tempdf<-phenosnp_cov
+
+phenosnp_cov$unlist_V1<-unlist((phenosnp_cov$V1))
+phenosnp_cov$unlist_V3<-unlist((phenosnp_cov$V3))
+
+print(glm(AD  ~ unlist_V1 + unlist_V3 + age + sex, data = phenosnp_cov, family = "binomial"))
+print(summary(glm(AD  ~ unlist_V1 + unlist_V3 + age + sex + NAT+ YRI, data = phenosnp_cov, family = "binomial")))
+
+break
+}
+
+
+print(head(tempdf))
+
+tempdf$unlist_V1<-unlist((tempdf$V1))
+tempdf$unlist_V3<-unlist((tempdf$V3))
+
+tempdf$unlist_V1<-as.factor(tempdf$unlist_V1)
+tempdf$unlist_V3<-as.factor(tempdf$unlist_V3)
+
+summary(glm(AD  ~ unlist_V1 + unlist_V3 + age + sex, data = tempdf, family = "binomial"))
+
+
+
+
+
+
+
+
+
+
