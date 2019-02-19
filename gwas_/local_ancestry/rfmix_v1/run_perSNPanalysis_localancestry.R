@@ -13,7 +13,8 @@
 #
 
 library(data.table)
-
+library(dplyr)
+snp_position.file<-"rsids_allchrs_positions"
 ancestry.file<-"components_CHR22_rfmix.txt" # this is space sep
 snp.file<-"CHR22_snps_rfmix" #this is comma sep 
 phenotype.file<-"input_pheno_global_ancestry.txt"
@@ -22,10 +23,21 @@ df.haplotype_ancestry<-data.table::fread(ancestry.file, showProgress = TRUE)  #n
 df.snps<-data.table::fread(snp.file,sep=",", showProgress = TRUE,header=FALSE)  #no header by default. Header =FALSE
 df.phenotype<-data.table::fread(phenotype.file, showProgress = TRUE,header=TRUE)  #no header by default. Header =FALSE
 
+df.snppos_rsids<-data.table::fread(snp_position.file, showProgress = TRUE,header=FALSE)  #no header by default. Header =FALSE
+
+#--get CHR and positions
+temp<-strsplit(df.snppos_rsids$V1,"\\:") #split column for RS 
+rs_chrmatrix <- do.call(rbind,temp) #do binding 
+
+rs_chrmatrix <- as.data.frame(rs_chrmatrix,stringsAsFactors = FALSE)
+colnames(rs_chrmatrix) <- c("CHR","BP")
+rs_chrmatrix$BP<-as.numeric(rs_chrmatrix$BP)
+rs_chrmatrix$CHR<-as.numeric(rs_chrmatrix$CHR)
+rs_chrmatrix$rsid<-df.snppos_rsids$V2
+
 print(dim(df.haplotype_ancestry))
 print(dim(df.phenotype))
 print(dim(df.snps))
-nrow(df.snps)
 
 store_pvaluePerSNP<-as.data.frame(matrix(NA,nrow=nrow(df.snps), ncol=7)) #per SNP P-value for V1, V3, age, sex, NAT global and YRI global 
 colnames(store_pvaluePerSNP)<-c("SNP_name","Pvalue_NAT.localancestry","Pvalue_YRI.localancestry","Age","Sex","NAT_globalancestry","YRI_globalancestry")
@@ -38,6 +50,7 @@ print(paste(df.snps[i,1] ,i,sep="    "))
 ##print(df.haplotype_ancestry[i,])
 print(dim(df.haplotype_ancestry[i,]))
 
+#make df per SNP
 temp_snpmatrix<-as.data.frame(matrix(df.haplotype_ancestry[i,], ncol=3, byrow=TRUE)) ###https://stackoverflow.com/questions/26973029/split-one-row-after-every-3rd-column-and-transport-those-3-columns-as-a-new-row
 
 print(dim(temp_snpmatrix))
@@ -72,8 +85,7 @@ break
 }
 
 print(head(store_pvaluePerSNP))
-
-print(head(tempdf))
+pvalue_snppos_rsids<-left_join(store_pvaluePerSNP,rs_chrmatrix,by=c("SNP_name"="rsid"))
 
 tempdf$unlist_V1<-unlist((tempdf$V1))
 tempdf$unlist_V3<-unlist((tempdf$V3))
