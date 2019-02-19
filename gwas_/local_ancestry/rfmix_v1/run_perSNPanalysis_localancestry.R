@@ -27,6 +27,8 @@ print(dim(df.phenotype))
 print(dim(df.snps))
 nrow(df.snps)
 
+store_pvaluePerSNP<-as.data.frame(matrix(NA,nrow=nrow(df.snps), ncol=7)) #per SNP P-value for V1, V3, age, sex, NAT global and YRI global 
+colnames(store_pvaluePerSNP)<-c("SNP_name","Pvalue_NAT.localancestry","Pvalue_YRI.localancestry","Age","Sex","NAT_globalancestry","YRI_globalancestry")
 tempdf<-""
 #
 #Take one SNP at a time. Break it's data into per person. Then remove CEU column
@@ -56,12 +58,20 @@ tempdf<-phenosnp_cov
 phenosnp_cov$unlist_V1<-unlist((phenosnp_cov$V1))
 phenosnp_cov$unlist_V3<-unlist((phenosnp_cov$V3))
 
-print(glm(AD  ~ unlist_V1 + unlist_V3 + age + sex, data = phenosnp_cov, family = "binomial"))
-print(summary(glm(AD  ~ unlist_V1 + unlist_V3 + age + sex + NAT+ YRI, data = phenosnp_cov, family = "binomial")))
+temp.df_pvalue<-summary(glm(AD  ~ unlist_V1 + unlist_V3 + age + sex +NAT+ YRI, data = phenosnp_cov, family = "binomial"))$coeff
+
+store_pvaluePerSNP[i,1]<-df.snps[i,1]
+store_pvaluePerSNP[i,2]<-temp.df_pvalue[2,4] # NAT local pvalue
+store_pvaluePerSNP[i,3]<-temp.df_pvalue[3,4] # YRI local pvalue
+store_pvaluePerSNP[i,4]<-temp.df_pvalue[4,4] #age
+store_pvaluePerSNP[i,5]<-temp.df_pvalue[5,4] #sex
+store_pvaluePerSNP[i,6]<-temp.df_pvalue[6,4] #NAT global pvalue
+store_pvaluePerSNP[i,7]<-temp.df_pvalue[7,4] #YRI global pvalue
 
 break
 }
 
+print(head(store_pvaluePerSNP))
 
 print(head(tempdf))
 
