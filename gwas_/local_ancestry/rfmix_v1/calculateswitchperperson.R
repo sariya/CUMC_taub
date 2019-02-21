@@ -10,6 +10,13 @@
 library(data.table)
 library(argpasre)
 
+parser$add_argument('-e',"--exon",help="Location for exon chunk file",required=TRUE)
+parser$add_argument('-n',"--num",help="Number",required=TRUE)
+parser$add_argument('-o',"--out",help="output directory",required=TRUE)
+parser$add_argument('-x',"--pre",help="prefix for output file",required=TRUE)
+
+args <- parser$parse_args() #make it a data structure
+out<-normalizePath(args$out)
 
 rfmix_coded.file<-"ll"
 
@@ -22,7 +29,7 @@ num_people=ncol(df.rfmixcoded)/2
 print(paste("the number of SNPs are",num_snps))
 print(paste("the number of people are",num_people))
 
-df_countperperson <- data.frame(counts=matrix(integer(), ncol = 1, nrow = num_people),stringsAsFactors=FALSE) #store counts in it
+df_countperperson <- data.frame(counts=matrix(integer(), ncol = 1, nrow = num_people),stringsAsFactors=FALSE) #store switch counts in it
 
 itr_person=0 #use it as iterator
 
@@ -54,7 +61,7 @@ while(itr_person<num_people){
 }
 
 #while loop ends
-
+print(dim(df_countperperson))
 
 write.table(x, file = "", append = FALSE, quote = TRUE, sep = " ", eol = "\n",
     na = "NA", dec = ".", row.names = TRUE, col.names = TRUE, qmethod = c("escape",
