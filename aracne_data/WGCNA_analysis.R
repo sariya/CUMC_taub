@@ -326,19 +326,35 @@ write.table(femaledf_colors_pvalue,"femalecolors_pvalue_regressionnomerging",sep
 df.hubgene_alldata<-as.data.frame(chooseTopHubInEachModule(datExpr_cleaned_greycolor,dynamiccolors_nogrey))
 colnames(df.hubgene_alldata)<-c("gene")
 df.hubgene_alldata$module<-rownames(df.hubgene_alldata)
-
+write.table(df.hubgene_alldata,"hubgenesalldata_nomerging",sep = "\t",quote=FALSE,col.names = TRUE,row.names = FALSE)
 ################
 #For Females only
 ##################
 index_extract.expr<-match(intersect(rownames(datExpr_cleaned_greycolor),status_female_eigen$Sample),rownames(datExpr_cleaned_greycolor))
-datExpr_cleaned_greycolor<-datExpr_cleaned_greycolor[index_extract.expr,]
-print(dim(datExpr_cleaned_greycolor))
+datExpr_cleaned_greycolorfemales<-datExpr_cleaned_greycolor[index_extract.expr,]
+print(dim(datExpr_cleaned_greycolorfemales)) # 157 19499
 
-df.hubgene_alldata<-as.data.frame(chooseTopHubInEachModule(datExpr_cleaned_greycolor,dynamiccolors_nogrey))
-colnames(df.hubgene_alldata)<-c("gene")
-df.hubgene_alldata$module<-rownames(df.hubgene_alldata)
-write.table(df.hubgene_alldata,"hubgenesalldata_nomerging",sep = "\t",quote=FALSE,col.names = TRUE,row.names = FALSE)
+df.hubgene_females<-as.data.frame(chooseTopHubInEachModule(datExpr_cleaned_greycolorfemales,dynamiccolors_nogrey))
+colnames(df.hubgene_females)<-c("gene")
+df.hubgene_females$module<-rownames(df.hubgene_females)
+write.table(df.hubgene_females,"hubgenesfemales_nomerging",sep = "\t",quote=FALSE,col.names = TRUE,row.names = FALSE)
 
+################
+#For Males 
+##################
+index_extract.expr<-match(intersect(rownames(datExpr_cleaned_greycolor),status_male_eigen$Sample),rownames(datExpr_cleaned_greycolor))
+datExpr_cleaned_greycolormales<-datExpr_cleaned_greycolor[index_extract.expr,]
+print(dim(datExpr_cleaned_greycolormales)) # 177 19499
+
+df.hubgene_males<-as.data.frame(chooseTopHubInEachModule(datExpr_cleaned_greycolormales,dynamiccolors_nogrey))
+colnames(df.hubgene_males)<-c("gene")
+df.hubgene_males$module<-rownames(df.hubgene_males)
+write.table(df.hubgene_males,"hubgenesmales_nomerging",sep = "\t",quote=FALSE,col.names = TRUE,row.names = FALSE)
+
+
+##################################
+##################################
+#################################
 #--use manual's method
 significance_module<-t(as.data.frame(signif(cor(merge_samples_diseasestatus$Status,mergedMEs, use="p"),2)))
 
