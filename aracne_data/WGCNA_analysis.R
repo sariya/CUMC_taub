@@ -283,7 +283,6 @@ print(dim(status_female_eigen)) #157
 #########################
 ##Perform for males only#
 #########################
-
 index_iterate=length(colnames(status_male_eigen))-4 #there are sample, sex, male and status columns
 maledf_colors_pvalue <- data.frame(matrix(ncol = 2, nrow =index_iterate) ) #we are using without any merging
 colnames(maledf_colors_pvalue)<-c("colorModule","Pvalue")
@@ -296,14 +295,11 @@ maledf_colors_pvalue[i,2] <-temp.pvalue
 }
 
 maledf_colors_pvalue<- maledf_colors_pvalue[order(maledf_colors_pvalue$Pvalue),] 
-
 write.table(maledf_colors_pvalue,"malecolors_pvalue_regressionnomerging",sep = "\t",quote=FALSE,col.names = TRUE,row.names = FALSE)
-
 
 ###########################
 ##Perform for Females only#
 ###########################
-
 
 index_iterate=length(colnames(status_female_eigen))-4 #there are sample, sex, male and status columns
 femaledf_colors_pvalue <- data.frame(matrix(ncol = 2, nrow =index_iterate) ) #we are using without any merging
@@ -320,17 +316,28 @@ femaledf_colors_pvalue<- femaledf_colors_pvalue[order(femaledf_colors_pvalue$Pva
 
 write.table(femaledf_colors_pvalue,"femalecolors_pvalue_regressionnomerging",sep = "\t",quote=FALSE,col.names = TRUE,row.names = FALSE)
 
-
 ##############################################################
 #pick hub genes
 ##############################################################
 
-#
+################
 #For entire data
-#
+################
 df.hubgene_alldata<-as.data.frame(chooseTopHubInEachModule(datExpr_cleaned_greycolor,dynamiccolors_nogrey))
 colnames(df.hubgene_alldata)<-c("gene")
 df.hubgene_alldata$module<-rownames(df.hubgene_alldata)
+
+################
+#For Females only
+##################
+index_extract.expr<-match(intersect(rownames(datExpr_cleaned_greycolor),status_female_eigen$Sample),rownames(datExpr_cleaned_greycolor))
+datExpr_cleaned_greycolor<-datExpr_cleaned_greycolor[index_extract.expr,]
+print(dim(datExpr_cleaned_greycolor))
+
+df.hubgene_alldata<-as.data.frame(chooseTopHubInEachModule(datExpr_cleaned_greycolor,dynamiccolors_nogrey))
+colnames(df.hubgene_alldata)<-c("gene")
+df.hubgene_alldata$module<-rownames(df.hubgene_alldata)
+write.table(df.hubgene_alldata,"hubgenesalldata_nomerging",sep = "\t",quote=FALSE,col.names = TRUE,row.names = FALSE)
 
 #--use manual's method
 significance_module<-t(as.data.frame(signif(cor(merge_samples_diseasestatus$Status,mergedMEs, use="p"),2)))
