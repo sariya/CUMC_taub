@@ -20,7 +20,7 @@ enableWGCNAThreads()
 options(stringsAsFactors = FALSE)
 
 exprs_data<-read.table("duplicate_genes_summed",header=TRUE)
-print(dim(exprs_data))
+print(dim(exprs_data)) #21422   364
 
 #transpose the expression data
 data_exprs.cleaned<-as.data.frame(t(exprs_data[, -c(1)])); #remove gene column
@@ -233,30 +233,92 @@ merge_samples_diseasestatus$Row.names <- as.numeric(merge_samples_diseasestatus$
 #sort based on 
 merge_samples_diseasestatus<-(merge_samples_diseasestatus[order(merge_samples_diseasestatus$Row.names),] )
  
-
 ###Run logistic regression to check significance of any module
 
-df_colors_pvalue <- data.frame(matrix(ncol = 2, nrow =length(colnames(mergedMEs) )))
-colnames(df_colors_pvalue)<-c("colorModule","Pvalue")
+#df_colors_pvalue <- data.frame(matrix(ncol = 2, nrow =length(colnames(mergedMEs) )))
+df_colors_pvalue <- data.frame(matrix(ncol = 2, nrow =length(colnames(MEs) ))) #we are using without any merging
 
+colnames(df_colors_pvalue)<-c("colorModule","Pvalue")
 
 #
 #mergedMEs it has column count as colors and row count as samples 
 #
-for (i in 1:length(colnames(mergedMEs))){
+for (i in 1:length(colnames(MEs))){
+##for (i in 1:length(colnames(mergedMEs))){
 ##=- loop over different module's eigen values
 
 #--run linear logistic regression
-temp.pvalue<-(summary(lm(formula = merge_samples_diseasestatus$Status ~ mergedMEs[,i], data = MEs, family = "binomial"))$coeff)[2,4]
-df_colors_pvalue[i,1] <-colnames(mergedMEs)[i]
+#temp.pvalue<-(summary(lm(formula = merge_samples_diseasestatus$Status ~ mergedMEs[,i], data = MEs, family = "binomial"))$coeff)[2,4]
+temp.pvalue<-(summary(lm(formula = merge_samples_diseasestatus$Status ~ MEs[,i], data = MEs, family = "binomial"))$coeff)[2,4]
+
+#df_colors_pvalue[i,1] <-colnames(mergedMEs)[i]
+df_colors_pvalue[i,1] <-colnames(MEs)[i]
 df_colors_pvalue[i,2] <-temp.pvalue
 
 }
 
 df_colors_pvalue<- df_colors_pvalue[order(df_colors_pvalue$Pvalue),] 
+write.table(df_colors_pvalue,"colors_pvalue_regressionnomerging",sep = "\t",quote=FALSE,col.names = TRUE,row.names = FALSE)
 
 
-write.table(df_colors_pvalue,"colors_pvalue_regression",sep = "\t",quote=FALSE,col.names = TRUE,row.names = FALSE)
+####################################################
+###
+###Male vs FEMALE analysis
+###
+##########################################
+male_female.file<-"male_femaleage"
+df.male_female<-read.table(male_female.file,header=TRUE)
+print(dim(df.male_female))
+
+rownames(MEs)<-rownames(datExpr_cleaned_greycolor)
+
+status_femalemale_eigen<-dplyr::left_join(MEs %>% mutate(Sample= rownames(MEs)),df.male_female,  by = c('Sample'="IID"))
+print(dim(status_femalemale_eigen))
+
+status_male_eigen<-status_femalemale_eigen[which(status_femalemale_eigen$SEX=="MALE"),]
+status_female_eigen<-status_femalemale_eigen[which(status_femalemale_eigen$SEX=="FEMALE"),]
+print(dim(status_male_eigen)) #177
+print(dim(status_female_eigen)) #157
+
+#########################
+##Perform for males only#
+#########################
+
+index_iterate=length(colnames(status_male_eigen))-4 #there are sample, sex, male and status columns
+maledf_colors_pvalue <- data.frame(matrix(ncol = 2, nrow =index_iterate) ) #we are using without any merging
+colnames(maledf_colors_pvalue)<-c("colorModule","Pvalue")
+for (i in 1:index_iterate){
+#--run linear logistic regression
+
+temp.pvalue<-(summary(lm(formula = status_male_eigen$STATUS ~ status_male_eigen[,i], data = status_male_eigen, family = "binomial"))$coeff)[2,4]
+maledf_colors_pvalue[i,1] <-colnames(MEs)[i]
+maledf_colors_pvalue[i,2] <-temp.pvalue
+}
+
+maledf_colors_pvalue<- maledf_colors_pvalue[order(maledf_colors_pvalue$Pvalue),] 
+
+write.table(maledf_colors_pvalue,"malecolors_pvalue_regressionnomerging",sep = "\t",quote=FALSE,col.names = TRUE,row.names = FALSE)
+
+
+###########################
+##Perform for Females only#
+###########################
+
+
+index_iterate=length(colnames(status_female_eigen))-4 #there are sample, sex, male and status columns
+femaledf_colors_pvalue <- data.frame(matrix(ncol = 2, nrow =index_iterate) ) #we are using without any merging
+colnames(femaledf_colors_pvalue)<-c("colorModule","Pvalue")
+for (i in 1:index_iterate){
+#--run linear logistic regression
+
+temp.pvalue<-(summary(lm(formula = status_female_eigen$STATUS ~ status_female_eigen[,i], data = status_female_eigen, family = "binomial"))$coeff)[2,4]
+femaledf_colors_pvalue[i,1] <-colnames(MEs)[i]
+femaledf_colors_pvalue[i,2] <-temp.pvalue
+}
+
+femaledf_colors_pvalue<- femaledf_colors_pvalue[order(femaledf_colors_pvalue$Pvalue),] 
+
+write.table(femaledf_colors_pvalue,"femalecolors_pvalue_regressionnomerging",sep = "\t",quote=FALSE,col.names = TRUE,row.names = FALSE)
 
 #--use manual's method
 significance_module<-t(as.data.frame(signif(cor(merge_samples_diseasestatus$Status,mergedMEs, use="p"),2)))
@@ -265,7 +327,6 @@ significance_module<- significance_module[order(significance_module[,1]),]
 significance_module<-as.data.frame(significance_module)
 significance_module$colors<-row.names(significance_module)
 write.table(significance_module,"colors_significance",sep = "\t",quote=FALSE,col.names = TRUE,row.names = FALSE)
-
 
 ##--just verify things again
 p.values = corPvalueStudent(cor(diseasestatus$Status,mergedMEs, use="p"), nSamples = length(diseasestatus$Status))
@@ -281,7 +342,6 @@ ModuleSignificance<-(as.data.frame(ModuleSignificance))
 ModuleSignificance$color<-row.names(ModuleSignificance)
 
 ModuleSignificance<- ModuleSignificance[,c(2,1)]
-
 
 ##Signed and unsigned correlations#
 # We first plot correlation heatmaps for signed network:
@@ -304,9 +364,12 @@ plotNetworkHeatmap(datExpr, plotGenes = gene.names, networkType="unsigned", useT
 ## dplyr_0.7.8           Cairo_1.5-9           WGCNA_1.62
 ## fastcluster_1.1.25    dynamicTreeCut_1.63-1
 
-##########
-
+####################################################
+##########################################
+##########################################
+##########################################
 ###Don't go below this section
+##########################################
 CairoJPEG("merged_colors_threshold.jpeg",height=900,width=1000,quality=75)
 plotDendroAndColors(geneTree, cbind(dynamicColors, mergedColors), c("Dynamic Tree Cut", "Merged dynamic"), dendroLabels = FALSE, hang = 0.03, addGuide = TRUE, guideHang = 0.05)
 dev.off()
