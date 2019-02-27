@@ -320,6 +320,18 @@ femaledf_colors_pvalue<- femaledf_colors_pvalue[order(femaledf_colors_pvalue$Pva
 
 write.table(femaledf_colors_pvalue,"femalecolors_pvalue_regressionnomerging",sep = "\t",quote=FALSE,col.names = TRUE,row.names = FALSE)
 
+
+##############################################################
+#pick hub genes
+##############################################################
+
+#
+#For entire data
+#
+df.hubgene_alldata<-as.data.frame(chooseTopHubInEachModule(datExpr_cleaned_greycolor,dynamiccolors_nogrey))
+colnames(df.hubgene_alldata)<-c("gene")
+df.hubgene_alldata$module<-rownames(df.hubgene_alldata)
+
 #--use manual's method
 significance_module<-t(as.data.frame(signif(cor(merge_samples_diseasestatus$Status,mergedMEs, use="p"),2)))
 
