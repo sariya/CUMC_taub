@@ -59,15 +59,14 @@ def maxindex_(temp_string):
     ##
     
 def minindex_():
-    
+    print ""
     ##
     ##
 def read_file(temp_filelist):
+    
     """
-
     iterate through file list.
     Open each file and read. Then look for pairs
-
     """
     for i in temp_filelist:
         
@@ -103,7 +102,7 @@ def read_file(temp_filelist):
                                 print "we have something different",line
 
                             else:
-                                print "I don't know what's wrong. No beginning with HLA",line
+                                print "Something's wrong. No beginning with HLA",line
                     elif count_dash==3:
                         print " HLA gene with HLA gene ",infile_pair
                     else:
