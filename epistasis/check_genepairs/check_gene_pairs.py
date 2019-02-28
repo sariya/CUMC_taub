@@ -62,8 +62,14 @@ def minindex_():
     
     ##
     ##
-def read_file(temp_file):
-    for i in temp_file:
+def read_file(temp_filelist):
+    """
+
+    iterate through file list.
+    Open each file and read. Then look for pairs
+
+    """
+    for i in temp_filelist:
         
         print i
         with open(i) as handle:
@@ -71,7 +77,10 @@ def read_file(temp_file):
                 line=line.strip()
                 infile_pair=(line.split())[0]
                 print infile_pair
-
+                """
+                For the gene pair now look for dash, and see where to split. 
+                Count # of dashes. to make a cut
+                """
                 try:
                     
                     count_dash=infile_pair.count('-')
