@@ -51,6 +51,17 @@ def getgene_combinations(tempgeneFile):
 
 ##function ends----------------------------------------------------->>
 
+def maxindex_(temp_string):
+
+    return max([i for i, a in enumerate("HLA-DRB1-CLU") if a == "-"])
+
+    ##Function ends
+    ##
+    
+def minindex_():
+    
+    ##
+    ##
 def read_file(temp_file):
     for i in temp_file:
         
@@ -69,10 +80,26 @@ def read_file(temp_file):
                     
                     if count_dash==1:
                         print "Two paired non HLA gene ",infile_pair
+                        array_split_gene=infile_pair.split('-')
+                        gene1=array_split_gene[0]
+                        gene2=array_split_gene[1]
+                        
                     elif count_dash==2:
-                        print " HLA gene with some unique gene ",infile_pair
+                        print "HLA gene with some unique gene ",infile_pair
+
+                        if infile_pair.startswith("HLA"):
+                            print "we have HLA in beginning",infile_pair.upper()
+                        else:
+                            if "HLA" in infile_pair:
+                                print "we have something different",line
+
+                            else:
+                                print "I don't know what's wrong. No beginning with HLA",line
                     elif count_dash==3:
                         print " HLA gene with HLA gene ",infile_pair
+                    else:
+                        print "We don't know what's up here!",line
+                        sys.exit()
                     ##if elif ends
                     
                 ##try ends
