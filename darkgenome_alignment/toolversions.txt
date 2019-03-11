@@ -1,0 +1,6 @@
+bwa used version 0.7.16a-r1181
+samtools  1.9 (using htslib 1.9)
+picard - gatk ##to be updated
+
+
+ 
