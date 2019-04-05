@@ -61,15 +61,13 @@ for temp in vcf_reader:
         else:
             split_genotype=(sample['GT']).split("|") #split genotype check ref genotype first 
 
+            ##make first element as interger. Convert String into integer
             if int(split_genotype[0]) == 0:
                 store_genotype[itr_row,itr_sample]=1 #if first allele is 0 then dominant one genotype
-                print "We have something new",sample['GT'],sample,sample_dict[itr]
-                print itr_row,itr
                 
             if  int(split_genotype[0]) !=0:
                 store_genotype[itr_row,itr_sample]=2
-                print "We have genotype two",sample['GT'],sample,sample_dict[itr],split_genotype[0]
-                print itr_row,itr
+
 
         itr_sample+=1
             #if ends
@@ -87,7 +85,9 @@ for temp in vcf_reader:
     print temp_string
     itr_row+=1
     sys.exit()
-    
+
+###
+
 for sample in record.samples:
     
     if sample['GT'] =="./." or  sample['GT']=="0|0" \
