@@ -10,6 +10,16 @@ library(gdsfmt)
 
 print("Begin Script")
 library(dplyr)
+lirbary(argparse)
+parser <- ArgumentParser(description="perform admix MM") ##
+parser$add_argument('-c',"--ceu",help="CEU input file",required=TRUE) ##CEU Rfmix V1 components
+parser$add_argument('-n',"--nat",help="NAT input file",required=TRUE) ## NAT Rfmix V1 components
+parser$add_argument('-y',"--yri",help="YRI/AFR input file",required=TRUE)  ##YRI RFmix components
+parser$add_argument('-x',"--pre",help="prefix for output file",required=TRUE) ##prefix for output
+parser$add_argument('-s',"--snps",help="input SNPs file",required=TRUE) # store input snps file
+parser$add_argument('-n',"--chr",help="input chr number",required=TRUE) #store chr number
+
+args <- parser$parse_args() #make it a data structure
 
 #
 #Set file names
@@ -83,7 +93,6 @@ if(sum(!complete.cases(jointed_rschrpos)) !=0){
 stop("we have some issue jhere with Rsids and positions sum not equal to zero!!!!!")
 }
 
-
 if(nrow(jointed_rschrpos[complete.cases(jointed_rschrpos),]) != nrow(df.ceu)){
 stop("we have issue when taking complete cases and nrow with CEU")
 }
@@ -92,8 +101,10 @@ stop("we have issue when taking complete cases and nrow with CEU")
 #First three columns are useless in NAT/CEU/AFR 
 #
 
-df.afr<-df.afr[,-c()]
-df.ceu<-df.ceu[,]
-df.nat<-df.nat[,]
+
+
+#df.afr<-df.afr[,-c()]
+#df.ceu<-df.ceu[,]
+#df.nat<-df.nat[,]
 print("Ending Script")
 
