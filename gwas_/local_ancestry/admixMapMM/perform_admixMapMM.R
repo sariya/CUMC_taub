@@ -9,6 +9,7 @@ print("Begin Script")
 library(GWASTools)
 library(gdsfmt)
 library(dplyr)
+library(GENESIS)
 library(argparse)
 print("loaded libraries")
 parser <- ArgumentParser(description="perform admix MM") ##
@@ -29,6 +30,10 @@ args <- parser$parse_args() #make it a data structure
 #file.ceu<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/local_ancestry_analysis/localancestry_analysis/RFMIX_datapreparations/ancestry_components/CHR22/merged_CHR22_CEU.txt"
 #file.snps<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/local_ancestry_analysis/localancestry_analysis/RFMIX_datapreparations/ancestry_components/CHR22/CHR22_snps_rfmix"
 
+file.pheno<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/local_ancestry_analysis/localancestry_analysis/RFMIX_datapreparations/genesis_admixMapMM/input.pheno"
+file.kinship<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/local_ancestry_analysis/localancestry_analysis/kinship/result.cXX.txt"
+file.sampleid<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/local_ancestry_analysis/localancestry_analysis/RFMIX_datapreparations/genesis_admixMapMM/input.sampleids"
+file.rsPos<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/local_ancestry_analysis/localancestry_analysis/RFMIX_datapreparations/ancestry_components/rsids_allchrs_positions"
 file.afr<-normalizePath(args$yri)
 file.nat<-normalizePath(args$nat)
 file.ceu<-normalizePath(args$ceu)
@@ -54,6 +59,17 @@ df.afr<-read.csv(file.afr,header=FALSE)
 df.nat<-read.csv(file.nat,header=FALSE)
 df.ceu<-read.csv(file.ceu,header=FALSE)
 
+df.sampleids<-read.table(file.sampleid,header=FALSE)
+print(dim(df.sampleids))
+
+grm_all <- as.matrix(read.table(file.kinship))
+print(dim(grm_all))
+
+rownames(grm_all)<-df.sampleids$V1
+colnames(grm_all)<-df.sampleids$V1
+
+df.pheno<-read.table(file.pheno,header=TRUE)
+print(dim(df.pheno))
 print(dim(df.afr))
 print(dim(df.nat))
 print(dim(df.ceu))
@@ -64,7 +80,7 @@ colnames(df.snps)<-c("rsids","a1","a2")
 #Check nrow in order to ensure data look good.
 #		
 if(nrow(df.afr)!=nrow(df.nat) | nrow(df.ceu)!=nrow(df.nat)){
-print("issue with nrow nat ceu yri")
+stop("issue with nrow nat ceu yri")
 }
 
 if(nrow(df.afr)!=nrow(df.nat) | nrow(df.ceu)!=nrow(df.snps)){
@@ -78,8 +94,6 @@ stop("issue with SNPs nrow")
 #
 #Read file with rs ids and chr:pos
 #
-
-file.rsPos<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/local_ancestry_analysis/localancestry_analysis/RFMIX_datapreparations/ancestry_components/rsids_allchrs_positions"
 
 df.rsPos<-read.table(file.rsPos,header=FALSE)
 print(dim(df.rsPos))
@@ -106,7 +120,7 @@ jointed_rschrpos<-left_join(df.snps,rs_chrmatrix,by=c("rsids"))
 if(sum(!complete.cases(jointed_rschrpos)) !=0){
 print(chr)
 
-stop("we have some issue jhere with Rsids and positions sum not equal to zero!!!!!")
+stop("we have some issue here with Rsids and positions sum not equal to zero!!!!!")
 }
 
 if(nrow(jointed_rschrpos[complete.cases(jointed_rschrpos),]) != nrow(df.ceu)){
@@ -125,9 +139,16 @@ print("All data look Good")
 #df.ceu<-df.ceu[,]
 #df.nat<-df.nat[,]
 
-## Creating a GDS file and variable hierarchy
-##http://corearray.sourceforge.net/tutorials/gdsfmt/#creating-a-gds-file-and-variable-hierarchy
-##
+
+# fit the null mixed model
+covariates <- c( "sex","age","mds1","mds2","mds3" ) ##make sure sex is M/F. 0/1 isn't acccepted
+outcome <- "AD"
+# make ScanAnnotationDataFrame
+scanAnnot <- ScanAnnotationDataFrame(data.frame(scanID = rownames(grm_all),df.pheno, stringsAsFactors=FALSE))
+
+nullmod <- fitNullMM(scanData = scanAnnot,outcome = outcome,covars = covariates, covMatList = grm_all,verbose = TRUE)
+
+ancestries <- c("CEU", "NAT","YRI")
 
 print("Ending Script")
 
