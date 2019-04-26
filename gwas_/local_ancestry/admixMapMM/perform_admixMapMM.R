@@ -11,6 +11,7 @@ library(gdsfmt)
 library(dplyr)
 library(GENESIS)
 library(argparse)
+library(SNPRelate)
 print("loaded libraries")
 parser <- ArgumentParser(description="perform admix MM") ##
 parser$add_argument('-c',"--ceu",help="CEU input file",required=TRUE) ##CEU Rfmix V1 components
@@ -52,7 +53,7 @@ print(out_prefix)
 #
 
 ##chr<-22
-chr<-as.numeric(as.character(chr)) ##make change to character chromosome number
+chr<-as.integer(as.numeric(as.character(chr))) ##make change to character chromosome number
 print(chr)
 df.snps<-read.csv(file.snps,header=FALSE)
 df.afr<-read.csv(file.afr,header=FALSE)
@@ -135,10 +136,48 @@ stop("we have issue when taking complete cases and nrow with CEU")
 print(dim(jointed_rschrpos))
 
 print("All data look Good")
-#df.afr<-df.afr[,-c()]
-#df.ceu<-df.ceu[,]
-#df.nat<-df.nat[,]
 
+print("creating GDS file")
+
+file.gdsdosage<-paste("dosage","_CHR",chr,".gds",sep="")
+
+#snpgdsCreateGeno("test2.gds", 
+ #   sample.id = df.sampleids$V1, snp.id = jointed_rschrpos$rsids,
+  #  snp.chromosome = jointed_rschrpos$CHR,
+   # snp.position = jointed_rschrpos$POS)
+
+gdsfile <- createfn.gds(file.gdsdosage)
+
+add.gdsn(gdsfile,"snp.chromosome",rep(chr, nrow(df.ceu)))
+#https://github.com/zhengxwen/gdsfmt/issues/23#issuecomment-486452705
+
+##snpgdsCreateGeno(gdsfile ,"sample.id" ,df.sampleids$V1, snp.id = df.ceu[,c(1)],    snp.chromosome = chr,    snp.position = jointed_rschrpos$POS)
+
+matrix.afr<-as.matrix(df.afr[,-c(1:3)])
+matrix.nat<-as.matrix(df.nat[,-c(1:3)])
+matrix.ceu<-as.matrix(df.ceu[,-c(1:3)])
+add.gdsn(gdsfile , "dosage_eur",matrix.ceu)
+add.gdsn(gdsfile , "dosage_nat",matrix.nat)
+add.gdsn(gdsfile , "dosage_afr",matrix.afr)
+
+add.gdsn(gdsfile,"sample.id" ,df.sampleids$V1)
+add.gdsn(gdsfile,"snp.id" ,df.ceu[,c(1)])
+add.gdsn(gdsfile,"snp.position",jointed_rschrpos$POS)
+
+##gds <- GdsGenotypeReader(gds, genotypeVar="dosage_eur") id <- getSnpID(gdsfile) chrom <- getChromosome(gdsfile) 
+
+##print and get details if needed
+gds <- openfn.gds(file.gdsdosage)
+
+id <- read.gdsn(index.gdsn(gds, "snp.id"))
+print(length(id ))
+chrom <- read.gdsn(index.gdsn(gds, "snp.chromosome"))
+print(length(chrom))
+closefn.gds(gds)
+
+print("Closed and printed information about GDS created")
+
+print("completed creating GDS file")
 
 # fit the null mixed model
 covariates <- c( "sex","age","mds1","mds2","mds3" ) ##make sure sex is M/F. 0/1 isn't acccepted
@@ -148,7 +187,17 @@ scanAnnot <- ScanAnnotationDataFrame(data.frame(scanID = rownames(grm_all),df.ph
 
 nullmod <- fitNullMM(scanData = scanAnnot,outcome = outcome,covars = covariates, covMatList = grm_all,verbose = TRUE)
 
-ancestries <- c("CEU", "NAT","YRI")
+ancestries <- c("nat","afr") ##only two ancestries. 
+genoDataList <- list()
+
+tempgds <- openfn.gds(file.gdsdosage)
+for (anc in  ancestries ){
+  gdsr <- GdsGenotypeReader(tempgds , genotypeVar=paste0("dosage_", anc))
+  genoDataList[[anc]] <- GenotypeData(gdsr, scanAnnot=scanAnnot)
+}
+
+
+assoc.admix <- admixMapMM(genoDataList,nullMMobj = nullmod)
 
 print("Ending Script")
 
