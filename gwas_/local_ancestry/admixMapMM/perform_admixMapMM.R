@@ -157,7 +157,7 @@ add.gdsn(gdsfile,"snp.chromosome",rep(chr, nrow(df.ceu)))
 matrix.afr<-as.matrix(df.afr[,-c(1:3)]) ##delete first three columns of RS ids and A1 and A2
 matrix.nat<-as.matrix(df.nat[,-c(1:3)])
 matrix.ceu<-as.matrix(df.ceu[,-c(1:3)])
-add.gdsn(gdsfile , "dosage_eur",matrix.ceu)
+add.gdsn(gdsfile , "dosage_ceu",matrix.ceu)
 add.gdsn(gdsfile , "dosage_nat",matrix.nat)
 add.gdsn(gdsfile , "dosage_afr",matrix.afr)
 
@@ -183,7 +183,7 @@ covariates <- c( "sex","age","mds1","mds2","mds3" ) ##make sure sex is M/F. 0/1 
 outcome <- "AD"
 # make ScanAnnotationDataFrame
 scanAnnot <- ScanAnnotationDataFrame(data.frame(scanID = rownames(grm_all),df.pheno, stringsAsFactors=FALSE))
-print("Fit nUll model")
+print("Fit null model")
 nullmod <- fitNullMM(scanData = scanAnnot,outcome = outcome,covars = covariates, covMatList = grm_all,verbose = TRUE)
 print("Completed fitting null model")
 
@@ -192,11 +192,13 @@ genoDataList <- list()
 
 tempgds <- openfn.gds(file.gdsdosage) ##open gds dosage and close please
 for (anc in  ancestries ){
+	print(anc )
   gdsr <- GdsGenotypeReader(tempgds , genotypeVar=paste0("dosage_", anc))
   genoDataList[[anc]] <- GenotypeData(gdsr, scanAnnot=scanAnnot)
 }
+##don't close the object of GDS, otherwise it gives error Error in ls.gdsn(object@handler) :
+##  Invalid GDS node object (it was closed or deleted).
 
-closefn.gds(tempgds)
 assoc.admix <- admixMapMM(genoDataList,nullMMobj = nullmod)
 print(dim(assoc.admix))
 
@@ -210,8 +212,9 @@ write.table(assoc.admix.jointed, file = out_prefix, append = FALSE, quote = FALS
             na = "NA", dec = ".", row.names = FALSE, col.names = TRUE, qmethod = c("escape",
         "double"), fileEncoding = "")
 
-print("Ending Script")
+closefn.gds(tempgds)
 
+print("Ending Script")
 ##Important links:
 ##https://bioconductor.org/packages/devel/bioc/vignettes/SNPRelate/inst/doc/SNPRelateTutorial.html#create-a-gwas-snp-gds-file
 #
