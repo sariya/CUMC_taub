@@ -90,20 +90,16 @@ colnames(df.snps)<-c("rsids","a1","a2")
 #Check nrow in order to ensure data look good.
 #		
 if(nrow(df.afr)!=nrow(df.nat) | nrow(df.ceu)!=nrow(df.nat)){
-stop("issue with nrow nat ceu yri")
+    stop("issue with nrow nat ceu yri")
 }
 
 if(nrow(df.afr)!=nrow(df.nat) | nrow(df.ceu)!=nrow(df.snps)){
-stop("issue with SNPs nrow")
+    stop("issue with SNPs nrow")
 }
 
-#
-#Check and reading ends
-#
+##Check and reading ends#
 
-#
-#Read file with rs ids and chr:pos
-#
+##Read file with rs ids and chr:pos#
 
 df.rsPos<-read.table(file.rsPos,header=FALSE)
 print(dim(df.rsPos))
@@ -117,9 +113,7 @@ rs_chrmatrix$rsids<- df.rsPos$V2
 rs_chrmatrix$V1<-as.numeric(as.character(rs_chrmatrix$V1))
 rs_chrmatrix$V2<-as.numeric(as.character(rs_chrmatrix$V2))
 
-#
-#get length of positions and RSids that match given CHRs
-#
+##get length of positions and RSids that match given CHRs#
 print(length(which(rs_chrmatrix$V1==chr)))
 
 rs_chrmatrix<-rs_chrmatrix[which(rs_chrmatrix$V1==chr),]
@@ -128,20 +122,19 @@ colnames(rs_chrmatrix)<-c("CHR","POS","rsids")
 jointed_rschrpos<-left_join(df.snps,rs_chrmatrix,by=c("rsids"))
 
 if(sum(!complete.cases(jointed_rschrpos)) !=0){
-print(chr)
+    print(chr)
 
-stop("we have some issue here with Rsids and positions sum not equal to zero!!!!!")
+    stop("we have some issue here with Rsids and positions sum not equal to zero!!!!!")
 }
+##If ends
 
 if(nrow(jointed_rschrpos[complete.cases(jointed_rschrpos),]) != nrow(df.ceu)){
-print(chr)
-stop("we have issue when taking complete cases and nrow with CEU")
-
+    print(chr)
+    stop("we have issue when taking complete cases and nrow with CEU")
 }
+##if ends
 
-#
-#First three columns are useless in NAT/CEU/AFR 
-#
+##First three columns are useless in NAT/CEU/AFR #
 print(dim(jointed_rschrpos))
 
 print("All data look Good")
@@ -152,8 +145,7 @@ file.gdsdosage<-paste("dosage","_CHR",chr,".gds",sep="")
 
 #snpgdsCreateGeno("test2.gds", 
  #   sample.id = df.sampleids$V1, snp.id = jointed_rschrpos$rsids,
-  #  snp.chromosome = jointed_rschrpos$CHR,
-   # snp.position = jointed_rschrpos$POS)
+  #  snp.chromosome = jointed_rschrpos$CHR,   # snp.position = jointed_rschrpos$POS)
 
 gdsfile <- createfn.gds(file.gdsdosage)
 
@@ -207,18 +199,18 @@ closefn.gds(tempgds)
 assoc.admix <- admixMapMM(genoDataList,nullMMobj = nullmod)
 print(dim(assoc.admix))
 
-#sort based on joint-pval
+##sort based on joint-pval
 assoc.admix<- assoc.admix[order(assoc.admix$Joint.pval),] 
 
 ##do a merge of P-value output with RSids positions.
 assoc.admix.jointed<-left_join(assoc.admix,rs_chrmatrix[,-c(1)],by=c("snpID"="rsids"))
 
 write.table(assoc.admix.jointed, file = out_prefix, append = FALSE, quote = FALSE, sep = "\t", eol = "\n",
-    na = "NA", dec = ".", row.names = FALSE, col.names = TRUE, qmethod = c("escape",
+            na = "NA", dec = ".", row.names = FALSE, col.names = TRUE, qmethod = c("escape",
         "double"), fileEncoding = "")
 
 print("Ending Script")
 
 ##Important links:
-#https://bioconductor.org/packages/devel/bioc/vignettes/SNPRelate/inst/doc/SNPRelateTutorial.html#create-a-gwas-snp-gds-file
+##https://bioconductor.org/packages/devel/bioc/vignettes/SNPRelate/inst/doc/SNPRelateTutorial.html#create-a-gwas-snp-gds-file
 #
