@@ -162,7 +162,7 @@ add.gdsn(gdsfile,"snp.chromosome",rep(chr, nrow(df.ceu)))
 
 ##snpgdsCreateGeno(gdsfile ,"sample.id" ,df.sampleids$V1, snp.id = df.ceu[,c(1)],    snp.chromosome = chr,    snp.position = jointed_rschrpos$POS)
 
-matrix.afr<-as.matrix(df.afr[,-c(1:3)])
+matrix.afr<-as.matrix(df.afr[,-c(1:3)]) ##delete first three columns of RS ids and A1 and A2
 matrix.nat<-as.matrix(df.nat[,-c(1:3)])
 matrix.ceu<-as.matrix(df.ceu[,-c(1:3)])
 add.gdsn(gdsfile , "dosage_eur",matrix.ceu)
@@ -173,19 +173,17 @@ add.gdsn(gdsfile,"sample.id" ,df.sampleids$V1)
 add.gdsn(gdsfile,"snp.id" ,df.ceu[,c(1)])
 add.gdsn(gdsfile,"snp.position",jointed_rschrpos$POS)
 
-##gds <- GdsGenotypeReader(gds, genotypeVar="dosage_eur") id <- getSnpID(gdsfile) chrom <- getChromosome(gdsfile) 
-
-##print and get details if needed
+closefn.gds(gdsfile)
+##print and get details for verification
 gds <- openfn.gds(file.gdsdosage)
 
 id <- read.gdsn(index.gdsn(gds, "snp.id"))
 print(length(id ))
 chrom <- read.gdsn(index.gdsn(gds, "snp.chromosome"))
 print(length(chrom))
-closefn.gds(gds)
+closefn.gds(gds) ##close file. :-|
 
 print("Closed and printed information about GDS created")
-
 print("completed creating GDS file")
 
 # fit the null mixed model
@@ -199,14 +197,28 @@ nullmod <- fitNullMM(scanData = scanAnnot,outcome = outcome,covars = covariates,
 ancestries <- c("nat","afr") ##only two ancestries. 
 genoDataList <- list()
 
-tempgds <- openfn.gds(file.gdsdosage)
+tempgds <- openfn.gds(file.gdsdosage) ##open gds dosage and close please
 for (anc in  ancestries ){
   gdsr <- GdsGenotypeReader(tempgds , genotypeVar=paste0("dosage_", anc))
   genoDataList[[anc]] <- GenotypeData(gdsr, scanAnnot=scanAnnot)
 }
 
-
+closefn.gds(tempgds)
 assoc.admix <- admixMapMM(genoDataList,nullMMobj = nullmod)
+print(dim(assoc.admix))
+
+#sort based on joint-pval
+assoc.admix<- assoc.admix[order(assoc.admix$Joint.pval),] 
+
+##do a merge of P-value output with RSids positions.
+assoc.admix.jointed<-left_join(assoc.admix,rs_chrmatrix[,-c(1)],by=c("snpID"="rsids"))
+
+write.table(assoc.admix.jointed, file = out_prefix, append = FALSE, quote = FALSE, sep = "\t", eol = "\n",
+    na = "NA", dec = ".", row.names = FALSE, col.names = TRUE, qmethod = c("escape",
+        "double"), fileEncoding = "")
 
 print("Ending Script")
 
+##Important links:
+#https://bioconductor.org/packages/devel/bioc/vignettes/SNPRelate/inst/doc/SNPRelateTutorial.html#create-a-gwas-snp-gds-file
+#
