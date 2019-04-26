@@ -31,10 +31,19 @@ args <- parser$parse_args() #make it a data structure
 #file.ceu<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/local_ancestry_analysis/localancestry_analysis/RFMIX_datapreparations/ancestry_components/CHR22/merged_CHR22_CEU.txt"
 #file.snps<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/local_ancestry_analysis/localancestry_analysis/RFMIX_datapreparations/ancestry_components/CHR22/CHR22_snps_rfmix"
 
+##make sure sex is M/F. 0/1 isn't acccepted
 file.pheno<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/local_ancestry_analysis/localancestry_analysis/RFMIX_datapreparations/genesis_admixMapMM/input.pheno"
+
+##kinship is created using GEMMA. Use as is with no other fuss. please. use for all CHRs.
 file.kinship<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/local_ancestry_analysis/localancestry_analysis/kinship/result.cXX.txt"
+
+###external file. use for all CHRs.
 file.sampleid<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/local_ancestry_analysis/localancestry_analysis/RFMIX_datapreparations/genesis_admixMapMM/input.sampleids"
+
+##while workign with RFMix, this file was created per CHR. Use once for all
 file.rsPos<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/CHGWAS_analyses_data/multi_merged_data/merge_MESA_NOMAS_HGWAS126/local_ancestry_analysis/localancestry_analysis/RFMIX_datapreparations/ancestry_components/rsids_allchrs_positions"
+
+##Normalize paths in argparse##
 file.afr<-normalizePath(args$yri)
 file.nat<-normalizePath(args$nat)
 file.ceu<-normalizePath(args$ceu)
