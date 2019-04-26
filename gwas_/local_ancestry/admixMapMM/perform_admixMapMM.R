@@ -183,8 +183,9 @@ covariates <- c( "sex","age","mds1","mds2","mds3" ) ##make sure sex is M/F. 0/1 
 outcome <- "AD"
 # make ScanAnnotationDataFrame
 scanAnnot <- ScanAnnotationDataFrame(data.frame(scanID = rownames(grm_all),df.pheno, stringsAsFactors=FALSE))
-
+print("Fit nUll model")
 nullmod <- fitNullMM(scanData = scanAnnot,outcome = outcome,covars = covariates, covMatList = grm_all,verbose = TRUE)
+print("Completed fitting null model")
 
 ancestries <- c("nat","afr") ##only two ancestries. 
 genoDataList <- list()
