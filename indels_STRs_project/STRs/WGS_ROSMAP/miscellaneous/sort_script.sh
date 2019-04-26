@@ -1,0 +1,1 @@
+cat amyloid/gwasamyloidcount.CHR*.assoc.txt  | cut -f 2,4,5,8-11 | awk '!a[$0]++' | sort -k7,7 -g >sorted_gwasamyloid
