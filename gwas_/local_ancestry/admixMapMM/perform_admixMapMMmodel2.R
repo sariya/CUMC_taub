@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
 
 #
-#Date 04/22/2019
+#Date 04/29/2019
 #Sanjeev Sariya
 #Local Ancestry
 #https://rdrr.io/bioc/GENESIS/man/admixMapMM.html
