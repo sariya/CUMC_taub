@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
 
 #
-#Date 04/29/2019
+#Date 04/30/2019
 #Sanjeev Sariya
 #Local Ancestry APOE E4 adjusted FeMales only
 #https://rdrr.io/bioc/GENESIS/man/admixMapMM.html
