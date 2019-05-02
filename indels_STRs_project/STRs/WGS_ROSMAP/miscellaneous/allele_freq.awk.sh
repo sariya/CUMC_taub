@@ -3,19 +3,17 @@
 #
 #Date 04/20/2019
 #Sanjeev Sariya
-##Local script to get allel frequency of grepped STRs from in-house dosage created.
+##Local script to get allele frequency of grepped STRs from in-house dosage created.
 
-awk -F"," '{
+ awk -F"," '{
 for (i=4;i<=NF;i++){
+
 if($i!="NA"){
 total=total+1
 if($i!=0){
-minor=minor+1
+sum=sum+$i
 
-}
-}
+}}}
 
-}
-
-print minor,total,minor/(2*total)
+print sum/(total*2) 
 }'
