@@ -10,18 +10,17 @@ import re,sys, os, argparse
 from pprint import pprint
 from collections import OrderedDict
 
-parser=argparse.ArgumentParser("Gt repeat per allele")
+parser=argparse.ArgumentParser("Get motif repeat counts in alleles")
 
 parser.add_argument ('-b','--bed',help='location/path of bed file',required=True) # input bed file 
 parser.add_argument ('-s','--str',help='location/path of str file',required=True) # str file
 parser.add_argument ('-d','--dir_out',help='location/path of output ',required=True) # store path for output dir
-parser.add_argument ('-p','--prefix_output',help='prefix for output',required=True) #
+parser.add_argument ('-p','--prefix_output',help='prefix for output',required=True) # provided by loop script
 
 args_dict = vars(parser.parse_args()) # make them dict..
                     
 
 #output_file="testcomplete"
-
 #input_bedfile="/mnt/mfs/hgrcgrid/shared/GT_ADMIX/INDEL_comparisons/ROSMAP_WGS/input_BEDfiles/unchunked_bedfiles/hg19.hipstr_reference_CHR18.bed"
 
 #get VCF info per CHR and read it. # zgrep -v  "#" merged_ROSmap_hipSTRCHR10.vcf.gz | cut -f 1-5 
