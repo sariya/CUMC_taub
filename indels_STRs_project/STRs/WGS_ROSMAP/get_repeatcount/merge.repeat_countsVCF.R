@@ -68,14 +68,14 @@ for(i_snpnumber in 1:nrow(vcf@gt) ){
                     
                     repeats_alteranteallele<-df.repeat_count[index_str,3] ##store count value
                     
-                    ##print(repeats_alteranteallele)					print("multiple alleles in alterante ")
-                    ##print(class(repeats_alteranteallele)) 					print(unlist(strsplit( as.character(repeats_alteranteallele) , ",", fixed = FALSE, perl = FALSE, useBytes = FALSE)) )			
+                    ##print(repeats_alteranteallele) print("multiple alleles in alterante ")
+                    ##print(class(repeats_alteranteallele)) print(unlist(strsplit( as.character(repeats_alteranteallele) , ",", fixed = FALSE, perl = FALSE, useBytes = FALSE)) )			
                     ##split and unlist values. If comma present good, if not. no worries
                     
                     counts.allelemotifs<-(unlist(strsplit( as.character(repeats_alteranteallele) , ",", fixed = FALSE, perl = FALSE, useBytes = FALSE)) ) 
 
-                    ##print(length(counts.allelemotifs)) 					print(counts.allelemotifs[as.numeric(getref_alt[1])])
-                    ##print(counts.allelemotifs[as.numeric(getref_alt[3])]) 					print(as.numeric(counts.allelemotifs[as.numeric(getref_alt[1])])+ as.numeric(counts.allelemotifs[as.numeric(getref_alt[3])]))
+                    ##print(length(counts.allelemotifs)) 	print(counts.allelemotifs[as.numeric(getref_alt[1])])
+                    ##print(counts.allelemotifs[as.numeric(getref_alt[3])]) print(as.numeric(counts.allelemotifs[as.numeric(getref_alt[1])])+ as.numeric(counts.allelemotifs[as.numeric(getref_alt[3])]))
                     store.genotype[i_snpnumber,x_personnum-1]<- as.numeric(counts.allelemotifs[as.numeric(getref_alt[1])])+ as.numeric(counts.allelemotifs[as.numeric(getref_alt[3])]) 
                     
                 } else if(getref_alt[1]=="0" & getref_alt[3]=="0"){
@@ -123,6 +123,12 @@ for(i_snpnumber in 1:nrow(vcf@gt) ){
 }
 ##for loop ends
 
+##find rows taht are absolute NA. Those STRs were exlucded in repeat motifs
+
+rows_witNAs<-sum(apply(store.genotype,1,function(x)all(is.na(x))))
+print(paste("The number of rows with NAs are",rows_witNAs))
+print(paste("Rows we should be heandling are ", nrow(store.genotype)-rows_witNAs))
+
 colnames(store.genotype)<-person.names
 colnames(name_strs)<-c("STR_name","harmonized_STR_name","allele1","allele2")
 name_strs[,3:4]<-"AABBCC"
@@ -132,10 +138,21 @@ strnames.genotype<-strnames.genotype[,-c(1)]
 print(paste(out.file,"withoutcolnames",sep="_"))
 print(paste(out.file,"withcolnames",sep="_"))
 
-write.table (strnames.genotype, file = paste(out.file,"withoutcolnames",sep="_"), append = FALSE, quote = FALSE, sep = ",", eol = "\n",
-             na = "NA", dec = ".", row.names = FALSE, col.names = FALSE, qmethod = c("escape","double"), fileEncoding = "")
+write.table (strnames.genotype, file = paste(out.file,"withoutcolnames",sep="_"), append = FALSE, 
+quote = FALSE, sep = ",", eol = "\n",
+na = "NA", dec = ".", row.names = FALSE, col.names = FALSE, qmethod = c("escape","double"), fileEncoding = "")
 
-write.table (strnames.genotype, file = paste(out.file,"withcolnames",sep="_"), append = FALSE, quote = FALSE, sep = ",", eol = "\n",
-             na = "NA", dec = ".", row.names = FALSE, col.names = TRUE, qmethod = c("escape","double"), fileEncoding = "")
+write.table (strnames.genotype, file = paste(out.file,"withcolnames",sep="_"), append = FALSE, 
+quote = FALSE, sep = ",", eol = "\n",
+na = "NA", dec = ".", row.names = FALSE, col.names = TRUE, qmethod = c("escape","double"), fileEncoding = "")
 
 print("Exiting code")
+
+##df=data.frame(col1=c(1:3,NA,NA,4),col2=c(7:9,NA,NA,NA),col3=c(2:4,NA,NA,4))
+###apply(df,1,function(x)any(!is.na(x)))
+##df[apply(df,1,function(x)any(!is.na(x))),]
+##apply(df,1,function(x)all(is.na(x)))
+
+
+
+
