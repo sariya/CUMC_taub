@@ -7,19 +7,35 @@
 
 ##/usr/local/bin/Rscript
 #
-#Read in VCF
-#Create genotype based on repeat count and allele information 
-#from VCF GT : 0|0, 0|1, so on and so forth
+#Read in VCF#Create genotype based on repeat count and allele information 
+#from VCF GT : 0|0, 0|1, so on and so forth#
+
 #
+#Rscript  merge.repeat_countsVCF.R  -v VCF -r REP -o ODIR -p PREFIX
+#
+library(vcfR) ##This is vcfR 1.8.0
+library(argparse)
 
-library(vcfR)
-##library(argparse)
+parser <- ArgumentParser(description="create genotype from VCF and motif repeat files") #FAST and GCTA --
+parser$add_argument('-v',"--vcf",help="Location for vcf file",required=TRUE) # 
+parser$add_argument('-r',"--rep",help="Location for vcf file",required=TRUE) #
+parser$add_argument('-o',"--odir",help="Store output directory",required=TRUE) #store output directory
+parser$add_argument('-p',"--prefix",help="Store output prefix",required=TRUE) #store output prefix
 
-file.repeat_count<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/INDEL_comparisons/ROSMAP_WGS/calculate_dosage.byrepeats/repeatcounts_CHR18"
+args <- parser$parse_args() #make it a data structure
+prefix<-args$prefix
+out_dir<-normalizePath(args$odir)
+out.file<-paste(out_dir,prefix,sep="/")
+
+##file.repeat_count<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/INDEL_comparisons/ROSMAP_WGS/calculate_dosage.byrepeats/repeatcounts_CHR18"
+
+file.repeat_count<-normalizePath(args$rep)
 df.repeat_count<-read.table(file.repeat_count,header=FALSE)
 print(dim(df.repeat_count))
 
-vcf_file<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/INDEL_comparisons/ROSMAP_WGS/cleaning_mergedSTRs/cleanedmiss_depth_extractedpersons.final/filter.str.no_monomorphic.poor_depth.highmissing.postcleaning.removeindi_CHR18.recode.vcf"
+#vcf_file<-"/mnt/mfs/hgrcgrid/shared/GT_ADMIX/INDEL_comparisons/ROSMAP_WGS/cleaning_mergedSTRs/cleanedmiss_depth_extractedpersons.final/filter.str.no_monomorphic.poor_depth.highmissing.postcleaning.removeindi_CHR18.recode.vcf"
+
+vcf_file<-normalizePath(args$vcf)
 vcf <- read.vcfR( vcf_file, verbose = TRUE )
 
 name_strs<-as.data.frame(matrix(nrow=nrow(vcf@gt),ncol=4))
@@ -99,7 +115,7 @@ for(i_snpnumber in 1:nrow(vcf@gt) ){
         }
         ##for loop ends for per person genotype
     }
-                                        #if length ==0 ends
+    ##if length ==0 ends
     else{
         print(paste(name_strs[i_snpnumber,1]," missing from counted motifs"))
     }
@@ -108,9 +124,10 @@ for(i_snpnumber in 1:nrow(vcf@gt) ){
 ##for loop ends
 
 colnames(store.genotype)<-person.names
-colnames(name_strs)<-c("STR_name","allele1","allele2")
-name_strs[,2:3]<-"AABBCC"
+colnames(name_strs)<-c("STR_name","harmonized_STR_name","allele1","allele2")
+name_strs[,3:4]<-"AABBCC"
 strnames.genotype<-cbind(name_strs,store.genotype)
+strnames.genotype<-strnames.genotype[,-c(1)]
 
 print(paste(out.file,"withoutcolnames",sep="_"))
 print(paste(out.file,"withcolnames",sep="_"))
