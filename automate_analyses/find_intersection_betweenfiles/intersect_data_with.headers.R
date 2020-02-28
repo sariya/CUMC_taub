@@ -20,9 +20,9 @@ parser <- ArgumentParser(description="merge files with intersecting values only"
 
 parser$add_argument('-f1',"--file1",help="File that is base or reference",required=TRUE)
 parser$add_argument('-f2',"--file2",help="Second file",required=TRUE)
-parser$add_argument('-c1',"--col1",help="column number in second file",required=TRUE)
+parser$add_argument('-c1',"--col1",help="column number in first file",required=TRUE)
 parser$add_argument('-c2',"--col2",help="column number in second file",required=TRUE)
-parser$add_argument('-o',"--out",help="column number in second file",required=TRUE)
+parser$add_argument('-o',"--out",help="output file name",required=TRUE)
 
 args <- parser$parse_args() #make it a data structure
 file.ref<-normalizePath(args$file1) ##keep this as reference
