@@ -1,0 +1,10 @@
+#Date 03/01/2020
+#Open R type following commdn.
+#Replace pakcage name with your interest
+
+capture.output(utils:::print.bibentry(citation("RNOmni"), style = "Bibtex"),  file = "RNOmni_endnote.bib")
+
+##On command line
+
+bib2xml RNOmni_endnote.bib | xml2end > output.end
+
