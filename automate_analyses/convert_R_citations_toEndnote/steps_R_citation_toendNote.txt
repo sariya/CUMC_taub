@@ -1,10 +1,13 @@
 #Date 03/01/2020
-#Open R type following commdn.
-#Replace pakcage name with your interest
 
+#Open R type following command.
+#Replace package name with your interested one
+
+##in R environment
 capture.output(utils:::print.bibentry(citation("RNOmni"), style = "Bibtex"),  file = "RNOmni_endnote.bib")
 
-##On command line
+####
+##On command line on unix environment
 
 bib2xml RNOmni_endnote.bib | xml2end > output.end
 
