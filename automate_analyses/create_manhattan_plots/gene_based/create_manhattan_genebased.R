@@ -7,7 +7,7 @@
 ##
 ## "SNP","CHR", "START","END","P" these columns are needed in file
 ## R 3.4
-## Rscript create_manhattan_genebased.R -f plot_genes.input -x 6 -t "Gene based: Rare SNPs Model 1HGWAS123467 PR" -o manh_plot_rareSNPs_model1_HGWAS1234567PR
+## Rscript create_manhattan_genebased.R -f plot_genes.input -x 6 -t "Gene based: Rare SNPs Model 1 HGWAS123467 PR" -o manh_plot_rareSNPs_model1_HGWAS1234567PR
 ###  awk '{if(FNR==1){print "SNP","CHR", "START","END","P"} else{print  $1,$2, $3,$4,$16 }}' sortedgenenames_positions_rare_model1_merged.txt > plot_genes.input
 #####################################
 
