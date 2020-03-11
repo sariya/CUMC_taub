@@ -34,6 +34,7 @@ print(dim(df.genepvalue)) ##check if data are loaded fine ## SNP CHR START END P
 
 df.genepvalue$BP<-(df.genepvalue$START+df.genepvalue$END)/2
 
+df.genepvalue<-df.genepvalue[complete.cases(df.genepvalue),] ##there are gene names with sep-, mar- that fudge start and end when merging
 #Use qqman to plot manht graph
 CairoPNG(filename = paste(output_filename,".png",sep=""),quality = 75, height=800, width=900)
 
