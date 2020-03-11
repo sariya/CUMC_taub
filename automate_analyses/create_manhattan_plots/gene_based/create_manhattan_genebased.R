@@ -40,7 +40,7 @@ CairoPNG(filename = paste(output_filename,".png",sep=""),quality = 75, height=80
 par(mar = c(5,6,4,1))
 
 suppressWarnings(manhattan(df.genepvalue,main= title, 
-ylim = c(0,axis_limit),  cex = 1.5, 
+ylim = c(0,axis_limit),  cex = 1.5, cex.main=1.5,
 cex.axis = 1.2, cex.lab = 1.7,font.lab=2,
 col = c("goldenrod", "gray0"),
 genomewideline = -log10(2.2E-06),
