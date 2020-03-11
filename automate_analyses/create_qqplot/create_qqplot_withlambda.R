@@ -30,7 +30,7 @@ parser <- ArgumentParser(description="Create Q-Q plot using parameters")
 parser$add_argument('-f',"--file",help="File with pvalue and other information",required=TRUE)
 parser$add_argument('-c',"--col",help="Scol number for P-value",required=TRUE)
 parser$add_argument('-x',"--axis",help="max axis label 5, 6, 7",required=TRUE)
-parser$add_argument('-n',"--name",help="name of plot",required=TRUE)
+parser$add_argument('-o',"--outname",help="name of plot",required=TRUE)
 parser$add_argument('-t',"--title",help="header you'd like to see in plot",required=TRUE)
 
 args <- parser$parse_args() #make it a data structure
@@ -39,7 +39,7 @@ file_pvalue<-normalizePath(args$file) ##file with pvalue
 column_number<-as.numeric(args$col) ##column number that contains pvalue
 axis_limit<-as.numeric(args$axis) ##column number that contains pvalue
 title<-args$title ##the title you'd like 
-output_filename<-args$name
+output_filename<-args$outname
 
 ############################################################################
 ############################################################################
