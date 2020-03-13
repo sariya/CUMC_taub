@@ -12,8 +12,8 @@
 # -t "tite_in_plot"
 ##
 
-### /mnt/mfs/cluster/bin/R-3.4/bin/Rscript  /mnt/mfs/hgrcgrid/homes/ss5505/scripts_cumc/automate_analyses/create_qqplot/create_qqplot_withlambda.R -f merged.sorted -c 13 -n "qq_HGWAS123467PR_model1_commonrareSNPs" -x 5 -t "HGWAS123467PR Model1 Common Rare SNPs"
-##/mnt/mfs/cluster/bin/R-3.4/bin/Rscript  /mnt/mfs/hgrcgrid/homes/ss5505/scripts_cumc/automate_analyses/create_qqplot/create_qqplot_withlambda.R  -f gwas_model1_CHdbgenotyped_sexagebraak_disease.tab -c 5 -n "qq_GWASmodel1_CH_sex_age_PCs_braak_disease" -x 4 -t  "GWASmodel1 CH Database with sex age PCs braak disease"
+### /mnt/mfs/cluster/bin/R-3.4/bin/Rscript  /mnt/mfs/hgrcgrid/homes/ss5505/scripts_cumc/automate_analyses/create_qqplot/create_qqplot_withlambda.R -f merged.sorted -c 13 -o "qq_HGWAS123467PR_model1_commonrareSNPs" -x 5 -t "HGWAS123467PR Model1 Common Rare SNPs"
+##/mnt/mfs/cluster/bin/R-3.4/bin/Rscript  /mnt/mfs/hgrcgrid/homes/ss5505/scripts_cumc/automate_analyses/create_qqplot/create_qqplot_withlambda.R  -f gwas_model1_CHdbgenotyped_sexagebraak_disease.tab -c 5 -o "qq_GWASmodel1_CH_sex_age_PCs_braak_disease" -x 4 -t  "GWASmodel1 CH Database with sex age PCs braak disease"
 #
 
 library(qqman)
@@ -30,7 +30,7 @@ parser <- ArgumentParser(description="Create Q-Q plot using parameters")
 parser$add_argument('-f',"--file",help="File with pvalue and other information",required=TRUE)
 parser$add_argument('-c',"--col",help="Scol number for P-value",required=TRUE)
 parser$add_argument('-x',"--axis",help="max axis label 5, 6, 7",required=TRUE)
-parser$add_argument('-o',"--outname",help="name of plot",required=TRUE)
+parser$add_argument('-o',"--outname",help="name of plot",required=TRUE) ##output file name of PNG file
 parser$add_argument('-t',"--title",help="header you'd like to see in plot",required=TRUE)
 
 args <- parser$parse_args() #make it a data structure
