@@ -1,0 +1,6 @@
+PRS analysis for BRAAK staging and neuropathological AD analysis
+
+Polygenic Risk score (PRS) was rank-inverse normal transformed (RINT) using rankNorm function from RNOmi R library. 
+Default parameters were applied in this process. 
+Braak stage were defined as ordinal variables and analyzed using ordinal R library with clm function.
+
