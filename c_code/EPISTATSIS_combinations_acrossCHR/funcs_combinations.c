@@ -208,7 +208,6 @@ void create_combination(data_store *node_temp_gene, data_store *start_second_lis
     char temp_string_with_asterix[MAX_LEN];
 
     // FILE *write_ptr; //use this pointer to write combinations
-    printf("bhnchod the chr value is %s %s\n", chr_one, chr_second);
 
     if (file_name == NULL)
     {
