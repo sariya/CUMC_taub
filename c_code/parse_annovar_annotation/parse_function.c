@@ -20,7 +20,7 @@ void remove_trailingspaces(char *newline)
     */
     size_t line_length = strlen(newline);
 
-    if (line_length== 0)
+    if (line_length == 0)
     {
         printf("remove_trailingspaces issues with line trimming\n");
         return;
@@ -77,7 +77,7 @@ void join_strings(char *string_tojoin_toSNP, char glue_chr, char *snp_temp)
     else
     {
         size_t length_SNP = strlen(snp_temp); //SNP length
-        size_t itr = 0; //iterate over the string
+        size_t itr = 0;                       //iterate over the string
         size_t length_to_join = strlen(string_tojoin_toSNP);
 
         while (itr < length_to_join)
@@ -142,11 +142,28 @@ void display_gene_list(gene_store *headnode)
     }
     while ((headnode) != NULL)
     {
-        printf("we have so and so name %s\n", (headnode)->name);
+        printf("we have gene name %s \n", (headnode)->name);
+        snp_store *temp_address_to_print = headnode->first_snp;
+
+        while (temp_address_to_print != NULL)
+        {
+
+            printf("we have so and so name SNP %s \n", temp_address_to_print->snp_name);
+            temp_address_to_print = temp_address_to_print->next_snp_node;
+        }
         (headnode) = (headnode)->next;
     }
 }
 
+//////////////////////////////
+snp_store *return_snp_node()
+{
+    /**
+     * Return malloc node address
+     */
+    snp_store *tempaddress_snp = malloc(sizeof(snp_store));
+    return (tempaddress_snp);
+}
 gene_store *return_node()
 {
     /**
@@ -176,8 +193,23 @@ void delete_linked_list_gene(gene_store **headnode)
     else
     {
         next_node = current;
+        snp_store *next_snp_node, *current_snp_node;
+
         while (next_node)
         {
+            current_snp_node = current->first_snp;
+            //  printf("we are doing gene as %s\n", next_node->name);
+
+            next_snp_node = current_snp_node;
+
+            while (next_snp_node)
+            {
+                next_snp_node = current_snp_node->next_snp_node;
+                // printf("we will delete %s\n", current_snp_node->snp_name);
+                free(current_snp_node);
+                current_snp_node = next_snp_node;
+            }
+
             next_node = current->next; //store next node
             free(current);             //delete node
             current = next_node;       //
@@ -189,11 +221,15 @@ void delete_linked_list_gene(gene_store **headnode)
 void gene_add_node(gene_store **headnode, char *temp_gene, char *temp_snp)
 {
     /**
-     * 
      * Add node to the linked list
      */
     gene_store *temp_node_pointer = *headnode;
     gene_store *temp_node = return_node();
+
+    snp_store *temp_snp_node = return_snp_node();
+
+    temp_snp_node->next_snp_node = NULL;
+    strcpy(temp_snp_node->snp_name, temp_snp);
 
     strcpy(temp_node->name, temp_gene);
     temp_node->next = NULL;
@@ -201,6 +237,7 @@ void gene_add_node(gene_store **headnode, char *temp_gene, char *temp_snp)
     if (temp_node_pointer == NULL)
     {
         temp_node_pointer = temp_node;
+        temp_node_pointer->first_snp = temp_snp_node;
         *headnode = temp_node_pointer;
     }
     else
@@ -209,21 +246,60 @@ void gene_add_node(gene_store **headnode, char *temp_gene, char *temp_snp)
         {
             temp_node_pointer = temp_node_pointer->next;
         }
+
+        temp_node->first_snp = temp_snp_node;
         temp_node_pointer->next = temp_node;
     }
 }
 //////////////////////////////////
 
-int search_gene(gene_store **headnode, char *temp_gene_name)
+void add_SNP_to_exiting_gene(gene_store **headnode, char *temp_gene_name, char *snp_name_temp)
 {
-    int flag_found_gene = 0;
-    printf("we have value as %s\n", temp_gene_name);
+
     if (*headnode == NULL)
     {
         printf("No linked list exists. Exiting search_gene\n");
     }
-    
-    else if(strlen(temp_gene_name) ==0){
+
+    else if (strlen(temp_gene_name) == 0)
+    {
+        printf("in function add_SNP_to_exiting_gene gene length is 0\n");
+    }
+    else if (strlen(snp_name_temp) == 0)
+    {
+        printf("in function add_SNP_to_exiting_gene SNP length is 0\n");
+    }
+    else
+    {
+        gene_store *temp_node_pointer = *headnode;
+        snp_store *temp_snp_node = return_snp_node();
+
+        temp_snp_node->next_snp_node = NULL;
+        strcpy(temp_snp_node->snp_name, snp_name_temp);
+
+        while ((temp_node_pointer) != NULL)
+        {
+            if (strcmp(temp_gene_name, temp_node_pointer->name) == 0)
+            {
+                snp_store *store_to_swap = temp_node_pointer->first_snp;
+                temp_node_pointer->first_snp = temp_snp_node;
+                temp_node_pointer->first_snp->next_snp_node = store_to_swap;
+            }
+            temp_node_pointer = temp_node_pointer->next;
+        }
+    }
+}
+int search_gene(gene_store **headnode, char *temp_gene_name)
+{
+    int flag_found_gene = 0;
+    //  printf("we have value as %s\n", temp_gene_name);
+    if (*headnode == NULL)
+    {
+        printf("No linked list exists. Exiting search_gene\n");
+    }
+
+    else if (strlen(temp_gene_name) == 0)
+    {
         printf("in function search_gene gene length is 0\n");
     }
 
@@ -232,8 +308,9 @@ int search_gene(gene_store **headnode, char *temp_gene_name)
         gene_store *temp_node_pointer = *headnode;
         while ((temp_node_pointer) != NULL)
         {
-            if(strcmp(temp_gene_name,temp_node_pointer->name) ==0){
-                flag_found_gene=1;
+            if (strcmp(temp_gene_name, temp_node_pointer->name) == 0)
+            {
+                flag_found_gene = 1;
                 break;
             }
             temp_node_pointer = temp_node_pointer->next;
