@@ -27,14 +27,17 @@ void display_gene_list(gene_store *headnode); //print linked list of the gene
 
 void gene_add_node(gene_store **headnode, char *temp_gene, char *temp_snp) ;
 
-int search_gene(gene_store **headnode, char *temp); 
+int search_gene(gene_store **headnode, char *temp); // check if already gene exists
 
 void chr_concat(char *tempCHR, char *temp_SNP);
 
 void join_strings(char *string_tojoin_toSNP, char glue_chr, char *snp_temp) ; ////
 
-int check_comma(char *temp_column_genes) ;
+//int check_comma(char *temp_column_genes) ;
 
 void remove_trailingspaces(char *newline) ;
 void add_SNP_to_exiting_gene(gene_store **headnode, char *temp_gene_name, char *snp_name_temp) ;
+void print_annotations(gene_store *headnode, char *outfile);
+int get_length_gene_nodes(gene_store *headnode);
+
 #endif

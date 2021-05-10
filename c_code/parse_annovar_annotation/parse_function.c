@@ -9,10 +9,30 @@
 // 05 09 2021
 
 ///////////////////////////////////////////
-///////////////////////////////////////
-//////////////////////////////
+int get_length_gene_nodes(gene_store *headnode)
+{
+    /**
+     * get total number of nodes in the gene linked list
+    */
+    int number_of_nodes = 0;
+    if (headnode == NULL)
+    {
+        printf("Nothing to count in get_length_gene_nodes function\n");
+        return number_of_nodes;
+    }
+    else
+    {
+        while ((headnode) != NULL)
+        {
+            ++number_of_nodes;
+            headnode = (headnode)->next;
+        }
+    }
 
-//////////////////
+    return number_of_nodes;
+}
+/////////////////// get_length_gene_nodes function ends
+
 void remove_trailingspaces(char *newline)
 {
     /**
@@ -30,39 +50,81 @@ void remove_trailingspaces(char *newline)
         newline[line_length - 1] = '\0';
     }
 }
-//////////////////////////////////////////////////
-int check_comma(char *temp_column_genes)
+///////////////remove_trailingspaces function ends
+
+void print_annotations(gene_store *headnode, char *outfile)
 {
     /**
-     * if comma found in the string return 1, else 0
+     * Function to display linkedlist 
+     * 
     */
+    FILE *write_ptr = fopen(outfile, "a"); //use this pointer to print gene and SNP
 
-    int found_comma = 0;
-    size_t len_column_genes = strlen(temp_column_genes);
-
-    if (len_column_genes == 0)
+    if (write_ptr == NULL)
     {
-        printf("we have issues in column of genes\n");
+        printf("In print_annotations we have error in file opening for print\n");
+        return;
     }
-    else
+
+    if (headnode == NULL)
     {
-        size_t itr = 0;
-        while (itr < len_column_genes)
+        printf("Nothing to display in print_annotations function\n");
+        return;
+    }
+    while ((headnode) != NULL)
+    {
+        //printf("%s\n", (headnode)->name);
+        fprintf(write_ptr, "%s\n", (headnode)->name);
+
+        snp_store *temp_address_to_print = headnode->first_snp;
+
+        while (temp_address_to_print != NULL)
         {
-            if (temp_column_genes[itr] == ',')
-            {
-                found_comma = 1;
-                break;
-            }
-            itr++;
+            //printf("%s\n", temp_address_to_print->snp_name);
+            fprintf(write_ptr, "%s\n", temp_address_to_print->snp_name);
+            temp_address_to_print = temp_address_to_print->next_snp_node;
         }
-        //while loop ends
-    }
-    //if length is more than 0
 
-    return found_comma;
+        //printf("END\n\n");
+        fprintf(write_ptr, "%s\n", "END\n");
+        (headnode) = (headnode)->next;
+    }
+    fclose(write_ptr);
 }
-//////////////////
+// //////////////print_annotations function ends
+
+// int check_comma(char *temp_column_genes)
+// {
+//     /**
+//      * if comma found in the string return 1, else 0
+//     */
+
+//     int found_comma = 0;
+//     size_t len_column_genes = strlen(temp_column_genes);
+
+//     if (len_column_genes == 0)
+//     {
+//         printf("we have issues in column of genes\n");
+//     }
+//     else
+//     {
+//         size_t itr = 0;
+//         while (itr < len_column_genes)
+//         {
+//             if (temp_column_genes[itr] == ',')
+//             {
+//                 found_comma = 1;
+//                 break;
+//             }
+//             itr++;
+//         }
+//         //while loop ends
+//     }
+//     //if length is more than 0
+
+//     return found_comma;
+// }
+// //////////////////
 void join_strings(char *string_tojoin_toSNP, char glue_chr, char *snp_temp)
 {
     /**
@@ -97,10 +159,9 @@ void join_strings(char *string_tojoin_toSNP, char glue_chr, char *snp_temp)
         }
     }
 }
-////////
+////////join_strings function ends
 void chr_concat(char *tempCHR, char *temp_SNP)
 {
-
     /**
      *   //tempCHR is 21
      * 
@@ -128,11 +189,12 @@ void chr_concat(char *tempCHR, char *temp_SNP)
         printf("we have issues in CHR number\n");
     }
 }
-//////////////////////////////
+///////////chr_concat function ends
+
 void display_gene_list(gene_store *headnode)
 {
     /**
-     * Function to display linkedlist 
+     * Function to display linkedlist of genes with SNPs within it
      * 
     */
     if (headnode == NULL)
@@ -147,7 +209,6 @@ void display_gene_list(gene_store *headnode)
 
         while (temp_address_to_print != NULL)
         {
-
             printf("we have so and so name SNP %s \n", temp_address_to_print->snp_name);
             temp_address_to_print = temp_address_to_print->next_snp_node;
         }
@@ -155,7 +216,7 @@ void display_gene_list(gene_store *headnode)
     }
 }
 
-//////////////////////////////
+//////////////display_gene_list function ends
 snp_store *return_snp_node()
 {
     /**
@@ -174,7 +235,7 @@ gene_store *return_node()
     return (tempaddress);
 }
 
-/////////////////////////////////////////////////
+////////// gene_store fumnntions ends
 void delete_linked_list_gene(gene_store **headnode)
 {
     /**
@@ -217,7 +278,7 @@ void delete_linked_list_gene(gene_store **headnode)
         *headnode = NULL;
     }
 }
-//////////////////////////////////////////////////////
+////////////////// delete_linked_list_gene function ends
 void gene_add_node(gene_store **headnode, char *temp_gene, char *temp_snp)
 {
     /**
@@ -251,10 +312,13 @@ void gene_add_node(gene_store **headnode, char *temp_gene, char *temp_snp)
         temp_node_pointer->next = temp_node;
     }
 }
-//////////////////////////////////
+////////////////gene_add_node function ends
 
 void add_SNP_to_exiting_gene(gene_store **headnode, char *temp_gene_name, char *snp_name_temp)
 {
+    /**
+     * If there is node of gene. then simply add SNP to the linked list
+    */
 
     if (*headnode == NULL)
     {
@@ -287,8 +351,11 @@ void add_SNP_to_exiting_gene(gene_store **headnode, char *temp_gene_name, char *
             }
             temp_node_pointer = temp_node_pointer->next;
         }
+        //iteration over the linked list ends
     }
 }
+///////// add_SNP_to_exiting_gene Function ends
+
 int search_gene(gene_store **headnode, char *temp_gene_name)
 {
     int flag_found_gene = 0;
@@ -319,3 +386,4 @@ int search_gene(gene_store **headnode, char *temp_gene_name)
 
     return flag_found_gene;
 }
+///////// search_gene Function ends
