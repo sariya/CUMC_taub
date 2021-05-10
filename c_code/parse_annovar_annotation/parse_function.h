@@ -7,7 +7,7 @@
 typedef struct snp
 {
     char snp_name[MAX_LEN];
-    struct snp *next;
+    struct snp *next_snp_node;
 } snp_store; 
 
 typedef struct genes
@@ -36,4 +36,5 @@ void join_strings(char *string_tojoin_toSNP, char glue_chr, char *snp_temp) ; //
 int check_comma(char *temp_column_genes) ;
 
 void remove_trailingspaces(char *newline) ;
+void add_SNP_to_exiting_gene(gene_store **headnode, char *temp_gene_name, char *snp_name_temp) ;
 #endif

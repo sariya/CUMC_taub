@@ -6,36 +6,42 @@
 ////
 #include "parse_function.h"
 
-//////////////////
-
 int main(int argc, char *argv[])
 {
     // gcc -Wpedantic -Wextra -Wall *.c -o ./parse_annot
 
     gene_store *start_gene = NULL;
     //
-    //   FILE *fp = fopen("/mnt/mfs/hgrcgrid/shared/MHAS/data/GENOTYPED/ANALYSES/gene_basedanalysis/annotation/INFO40/CHR22_MHAS_INFO40_plink.hg38_multianno.txt", "r");
+    //FILE *fp = fopen("/mnt/mfs/hgrcgrid/shared/MHAS/data/GENOTYPED/ANALYSES/gene_basedanalysis/annotation/INFO40/CHR22_MHAS_INFO40_plink.hg38_multianno.txt", "r");
+    FILE *fp = fopen(argv[1], "r");
+    printf("we have %s %s %d\n", argv[1], argv[2], argc);
 
-    FILE *fp = fopen("test_commas.txt", "r");
+    if (argc != 3)
+    {
+        printf("we have incorrect number of input params\n");
+        return -1;
+    }
+
+    //FILE *fp = fopen("test_commas.txt", "r");
     if (fp == NULL)
         exit(EXIT_FAILURE);
 
     char *line = NULL;
     size_t len = 0;
     int line_number = 0;
+    const char *delimiters = ",;"; //use this for spliting gene names
     while ((getline(&line, &len, fp)) != -1)
     {
         remove_trailingspaces(line);
         char *token = NULL;
         char SNP[400];
-        token = strtok(line, "\t");
+        token = strtok(line, "\t ");
         int count_split = 1;
 
         if (line_number > 1)
         {
             while (token != NULL && ++count_split <= 8)
             {
-
                 if (count_split == 2)
                 {
                     chr_concat(token, SNP); //make 21 as chr21:
@@ -55,47 +61,52 @@ int main(int argc, char *argv[])
 
                 if (count_split == 8)
                 {
-
                     char *gene_token = NULL;
-                    const char *delimiters = ",;";
-                    //gene_token = strtok(token, ",;");
-                    gene_token = strtok(token, delimiters);
+                    gene_token = strtok(token, delimiters); //we can have ; or , or none in the column for genes
 
                     while (gene_token)
                     {
-                        printf("we have gene name as %s\n", gene_token);
                         if (search_gene(&start_gene, gene_token) == 0)
                         {
                             gene_add_node(&start_gene, gene_token, SNP);
                         }
                         else
                         {
+                            /**
+                             * If gene exists in the linked list. simply add SNP name
+                            */
                             add_SNP_to_exiting_gene(&start_gene, gene_token, SNP);
                         }
-                        //gene_token = strtok(NULL, ",;");
-
                         gene_token = strtok(NULL, delimiters);
                     }
+                    //while loop ends of token for gene split
                 }
                 //check for column 8th - that is where all genes are stored.
 
-                token = strtok(NULL, "\t");
+                token = strtok(NULL, "\t ");
             }
+            /// token and split column 8 check ends
             SNP[0] = '\0';
-            // using printf() in all tests for consistency
-            //printf("line is %s\n", line);
         }
-        // printf("we have line number as %d\n", line_number);
-        line_number++;
+        //line_number check ends
+
+        line_number++; //parse from second line
     }
+    //while loop ends of file reading
     fclose(fp);
 
     if (line)
     {
         free(line);
     }
-    //    display_gene_list(start_gene);
-    delete_linked_list_gene(&start_gene);
 
+    printf("we'll print into file now\n");
+    //display_gene_list(start_gene);
+
+    printf("The number of nodes are %d\n", get_length_gene_nodes(start_gene));
+    print_annotations(start_gene, argv[2]);
+    printf("SNP-gene annotations have been printed in the output file provided\n");
+    delete_linked_list_gene(&start_gene);
+    printf("Exiting code\n");
     return 0;
 }
