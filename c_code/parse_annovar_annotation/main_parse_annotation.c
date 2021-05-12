@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
         token = strtok(line, "\t ");
         int count_split = 1;
 
-        if (line_number > 1)
+        if (line_number >= 1) //if line counter is more than 0
         {
             while (token != NULL && ++count_split <= 8)
             {
@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
             /// token and split column 8 check ends
             SNP[0] = '\0';
         }
+
         //line_number check ends
 
         line_number++; //parse from second line
