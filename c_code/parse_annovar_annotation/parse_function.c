@@ -93,38 +93,6 @@ void print_annotations(gene_store *headnode, char *outfile)
 }
 // //////////////print_annotations function ends
 
-// int check_comma(char *temp_column_genes)
-// {
-//     /**
-//      * if comma found in the string return 1, else 0
-//     */
-
-//     int found_comma = 0;
-//     size_t len_column_genes = strlen(temp_column_genes);
-
-//     if (len_column_genes == 0)
-//     {
-//         printf("we have issues in column of genes\n");
-//     }
-//     else
-//     {
-//         size_t itr = 0;
-//         while (itr < len_column_genes)
-//         {
-//             if (temp_column_genes[itr] == ',')
-//             {
-//                 found_comma = 1;
-//                 break;
-//             }
-//             itr++;
-//         }
-//         //while loop ends
-//     }
-//     //if length is more than 0
-
-//     return found_comma;
-// }
-// //////////////////
 void join_strings(char *string_tojoin_toSNP, char glue_chr, char *snp_temp)
 {
     /**
