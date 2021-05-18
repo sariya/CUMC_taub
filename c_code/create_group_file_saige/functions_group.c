@@ -8,8 +8,12 @@
 
 //Date 05 17 2021
 
+/////////////
 unsigned int nodes_snp_list(snp_store *temp_head_node)
 {
+    /**
+     * return count of nodes in the snp list within a gene
+    */
 
     unsigned int number_of_nodes = 0;
     if (temp_head_node == NULL)
@@ -27,6 +31,8 @@ unsigned int nodes_snp_list(snp_store *temp_head_node)
     }
     return number_of_nodes;
 }
+//////Function ends
+
 void display_gene_list(gene_store *headnode)
 {
     /**
@@ -90,6 +96,84 @@ void display_gene_list(gene_store *headnode)
     }
 }
 ///////////////////////////////////////////
+
+void print_group_files(gene_store *headnode, char *outfile)
+{
+    /**
+     * Function to display linkedlist 
+     * 
+    */
+    FILE *write_ptr = fopen(outfile, "a"); //use this pointer to print gene and SNP
+
+    if (write_ptr == NULL)
+    {
+        printf("In print_group_files we have error in file opening for print\n");
+        return;
+    }
+
+    if (headnode == NULL)
+    {
+        printf("Nothing to display in print_group_files function\n");
+        return;
+    }
+
+    while ((headnode) != NULL)
+    {
+        char string_annotation[50000];
+        string_annotation[0] = '\0';
+
+        //printf("we have gene name %s \n", (headnode)->name);
+        snp_store *temp_address_to_print = headnode->first_snp;
+
+        unsigned int temp_count_snps_gene_list = nodes_snp_list(temp_address_to_print);
+        mystrcat(string_annotation, (headnode)->name);
+
+        if (temp_count_snps_gene_list == 1)
+        {
+            mystrcat(string_annotation, "\t"); //we alraedy added gene in the beginning
+            mystrcat(string_annotation, temp_address_to_print->snp_name);
+            mystrcat(string_annotation, "\n");
+            ///printf("%s", string_annotation);
+            fprintf(write_ptr, "%s", string_annotation);
+        }
+        else
+        {
+            unsigned int itr_counter = 0;
+
+            while (temp_address_to_print != NULL)
+            {
+                if (itr_counter < temp_count_snps_gene_list - 1)
+                {
+                    //printf("we have so and so name SNP %s \n", temp_address_to_print->snp_name);
+                    mystrcat(string_annotation, "\t");
+                    mystrcat(string_annotation, temp_address_to_print->snp_name);
+                }
+                else
+                {
+                    /////////////////
+                    mystrcat(string_annotation, "\t"); //we alraedy added gene in the beginning
+                    mystrcat(string_annotation, temp_address_to_print->snp_name);
+                    mystrcat(string_annotation, "\n");
+                }
+                // if not the last node
+
+                itr_counter++;
+                temp_address_to_print = temp_address_to_print->next_snp_node;
+            }
+            //while iteration ends
+
+            //printf("%s", string_annotation);
+            fprintf(write_ptr, "%s", string_annotation);
+        }
+        //if more than one node in SNP list
+
+        (headnode) = (headnode)->next;
+    }
+    fclose(write_ptr);
+}
+// //////////////print_group function ends
+
+/////////////////////////////////////////////
 unsigned int get_length_gene_nodes(gene_store *headnode)
 {
     /**
@@ -109,7 +193,6 @@ unsigned int get_length_gene_nodes(gene_store *headnode)
             headnode = (headnode)->next;
         }
     }
-
     return number_of_nodes;
 }
 /////////////////////////////////////////
@@ -216,7 +299,7 @@ void gene_add_node(gene_store **headnode, char *temp_gene, char *temp_snp, unsig
 
     //strcpy(temp_snp_node->snp_name, temp_snp);
     copy_strings(temp_snp, temp_snp_node->snp_name, MAX_LEN_SNP);
-    
+
     //strcpy(temp_node->name, temp_gene);
     copy_strings(temp_gene, temp_node->name, MAX_LEN_GENE);
 
@@ -344,3 +427,46 @@ int search_gene(gene_store **headnode, char *temp_gene_name)
     return flag_found_gene;
 }
 ///////// search_gene Function ends
+
+void delete_linked_list_gene(gene_store **headnode)
+{
+    /**
+     * 
+     * This function is to delete linked list
+    */
+
+    gene_store *next_node;           //use it for iteration
+    gene_store *current = *headnode; //store current - begin from the start
+
+    if (*headnode == NULL)
+    {
+        printf("No linked list exists\n");
+        return;
+    }
+    else
+    {
+        next_node = current;
+        snp_store *next_snp_node, *current_snp_node;
+
+        while (next_node)
+        {
+            current_snp_node = current->first_snp;
+            next_snp_node = current_snp_node;
+
+            while (next_snp_node)
+            {
+                next_snp_node = current_snp_node->next_snp_node;
+                free(current_snp_node);
+                current_snp_node = next_snp_node;
+            }
+
+            next_node = current->next; //store next node
+            free(current);             //delete node
+            current = next_node;       //
+        }
+        *headnode = NULL;
+    }
+}
+////////////////// delete_linked_list_gene function ends
+
+///////////

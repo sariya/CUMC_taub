@@ -36,5 +36,9 @@ void display_gene_list(gene_store *headnode) ;
 
 char *mystrcat(char *dest, char *src) ;
 
+
+void print_group_files(gene_store *headnode, char *outfile);
+void delete_linked_list_gene(gene_store **headnode); 
+
 #endif
 
