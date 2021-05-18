@@ -7,7 +7,7 @@
 //  gcc -Wpedantic -Wextra -Wall main_parse_gtf.c -o gtf_parse
 
 //  make clean ; make ; ./gtf_parse  > genes
-int check_chromosome(char *chr_string)
+
 int main(int argc, char *argv[])
 {
     // /mnt/mfs/ctcn/resources/GRCh37/v1/Homo_sapiens.GRCh37.75.gtf
