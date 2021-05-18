@@ -118,8 +118,13 @@ int main(int argc, char *argv[])
 
                         gene_info = strtok(NULL, ";");
                     }
-                    printf("%s\n", gene_info_print); //print it on the screen
-                    break;                           //move out of the while loop of line parsing.
+
+                    if (strlen(gene_info_print) != 0)
+                    {
+                        printf("%s\n", gene_info_print); //print it on the screen
+                    }
+
+                    break; //move out of the while loop of line parsing.
                 }
                 ///parsing of column with gene info ends
 
