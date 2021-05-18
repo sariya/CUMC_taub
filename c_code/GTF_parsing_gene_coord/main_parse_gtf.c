@@ -4,17 +4,16 @@
 
 #include "functions_parse_gtf.h"
 
-//  gcc -Wpedantic -Wextra -Wall main_parse_gtf.c -o gtf_parse
-
-//  make clean ; make ; ./gtf_parse  > genes
-
 int main(int argc, char *argv[])
 {
-    // /mnt/mfs/ctcn/resources/GRCh37/v1/Homo_sapiens.GRCh37.75.gtf
-    //FILE *fp_gtf = fopen("test.gtf", "r");
-    //  cat test.gtf | grep gene | grep -v exon | grep -v transcript
-
-    FILE *fp_gtf = fopen("/mnt/mfs/ctcn/resources/GRCh37/v1/Homo_sapiens.GRCh37.75.gtf", "r"); // /mnt/mfs/ctcn/resources/GRCh38/v1/Homo_sapiens.GRCh38.93.filtered.gtf
+    /**
+     * take in GTF file. Print on the terminal CHR start, end, ensembl id, gene name and gene-biotype
+     * //  gcc -Wpedantic -Wextra -Wall main_parse_gtf.c -o gtf_parse
+     * //  make clean ; make ; ./gtf_parse  > genes
+     * //  cat test.gtf | grep gene | grep -v exon | grep -v transcript
+     * //  printf "CHR    START    END    ENSEMBL_IDGENE_NAME    GENE_SOURCE    GENE_BIOTYPE\n" >genes_CHR37
+    */
+    FILE *fp_gtf = fopen("/mnt/mfs/ctcn/resources/GRCh38/v1/Homo_sapiens.GRCh38.93.filtered.gtf", "r"); // /mnt/mfs/ctcn/resources/GRCh38/v1/Homo_sapiens.GRCh38.93.filtered.gtf
 
     if (fp_gtf == NULL)
         exit(EXIT_FAILURE);
@@ -40,8 +39,6 @@ int main(int argc, char *argv[])
             {
                 if (count_split == 1)
                 {
-                    //printf("we have chr as %s\n", token);
-
                     if (check_chromosome(token) == 0)
                     {
                         break;
@@ -51,12 +48,14 @@ int main(int argc, char *argv[])
                         mystrcat(gene_info_print, "chr");
                         mystrcat(gene_info_print, token);
                     }
-
-                    //printf("what to print %s\n", gene_info_print);
                 }
                 if (count_split == 3 && (strcmp(token, "gene") == 0))
                 {
                     found_gene = 1;
+                }
+                if (count_split == 3 && (strcmp(token, "gene") != 0))
+                {
+                    break;
                 }
                 if (count_split == 4 && found_gene == 1)
                 {
@@ -78,10 +77,6 @@ int main(int argc, char *argv[])
                     mystrcat(gene_info_print, token);
                 }
 
-                if (count_split == 3 && (strcmp(token, "gene") != 0))
-                {
-                    break;
-                }
                 if (count_split == 9 && found_gene == 1)
                 {
                     char *gene_info = NULL;
