@@ -4,39 +4,16 @@
 
 #include "functions_parse_gtf.h"
 
-void again_remove_double_quotes(char **temp_gene_info)
-{
-    if (*temp_gene_info == NULL)
-    {
-        printf("String recived is NULL\n");
-        return;
-    }
-    else
-    {
-        int str_length = strlen(*temp_gene_info); //store length
-        int itr_quote = 0;                        //us to iterate and find quote
-
-        while (itr_quote < str_length)
-        {
-            if (*(*temp_gene_info + itr_quote) == '"') // wait until you find a double quote.
-            {
-                *(*temp_gene_info + str_length - 1) = '\0';        //make last before character as NULL to remove "
-                *temp_gene_info = *temp_gene_info + itr_quote + 1; //move pointer to the location after "
-                break;
-            }
-            itr_quote++;
-        }
-        /// while ends
-    }
-}
-////////Function ends
-
 //  gcc -Wpedantic -Wextra -Wall main_parse_gtf.c -o gtf_parse
 
+//  make clean ; make ; ./gtf_parse  > genes
+int check_chromosome(char *chr_string)
 int main(int argc, char *argv[])
 {
     // /mnt/mfs/ctcn/resources/GRCh37/v1/Homo_sapiens.GRCh37.75.gtf
     //FILE *fp_gtf = fopen("test.gtf", "r");
+    //  cat test.gtf | grep gene | grep -v exon | grep -v transcript
+
     FILE *fp_gtf = fopen("/mnt/mfs/ctcn/resources/GRCh37/v1/Homo_sapiens.GRCh37.75.gtf", "r"); // /mnt/mfs/ctcn/resources/GRCh38/v1/Homo_sapiens.GRCh38.93.filtered.gtf
 
     if (fp_gtf == NULL)
@@ -51,18 +28,31 @@ int main(int argc, char *argv[])
         if (line[0] != '#')
         {
             char *token = NULL;
-            remove_trailingspaces(line);
+            remove_trailingspaces(line); //remove trailing new line character
 
             token = strtok(line, delimiters);
-            int count_split = 1;
-            int found_gene = 0; //if column 3rd is gene
+            int count_split = 1;        //use this for counting split. as columns are fixed
+            int found_gene = 0;         //if column 3rd is gene
+            char gene_info_print[5000]; //use this to print CHR1 start end ENS_ID GENE_NAME origin and biotype
+            gene_info_print[0] = '\0';
 
             while (token != NULL)
             {
                 if (count_split == 1)
                 {
                     //printf("we have chr as %s\n", token);
-                    ;
+
+                    if (check_chromosome(token) == 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        mystrcat(gene_info_print, "chr");
+                        mystrcat(gene_info_print, token);
+                    }
+
+                    //printf("what to print %s\n", gene_info_print);
                 }
                 if (count_split == 3 && (strcmp(token, "gene") == 0))
                 {
@@ -70,57 +60,71 @@ int main(int argc, char *argv[])
                 }
                 if (count_split == 4 && found_gene == 1)
                 {
-                    printf("we have start as %s\n", token);
+                    /**
+                     * join with start position
+                    */
+                    //printf("we have start as %s\n", token);
+                    mystrcat(gene_info_print, "\t");
+                    mystrcat(gene_info_print, token);
                 }
 
                 if (count_split == 5 && found_gene == 1)
                 {
-                    printf("we have end as %s\n", token);
+                    // printf("we have end as %s\n", token);
+                    /**
+                     * join with end position
+                    */
+                    mystrcat(gene_info_print, "\t");
+                    mystrcat(gene_info_print, token);
                 }
 
                 if (count_split == 3 && (strcmp(token, "gene") != 0))
                 {
-                    //printf("garbage as %s\n", token);
-                    ;
+                    break;
                 }
                 if (count_split == 9 && found_gene == 1)
                 {
                     char *gene_info = NULL;
-                    char *gene_id = NULL;
-                    char *gene_source = NULL;
-                    char *gene_biotype = NULL;
-
                     gene_info = strtok(token, ";"); // gene_id "ENSG00000223972"; gene_name "DDX11L1"; gene_source "ensembl_havana"; gene_biotype "pseudogene";
-                    
+
                     while (gene_info)
                     {
-                        if (gene_info[5] == 'i') // gene_id  
+                        if (gene_info[5] == 'i') // gene_id
                         {
-                            again_remove_double_quotes(&gene_info);
-                            printf("the name of ided is %s\n", gene_info);
+                            remove_double_quotes(&gene_info); //gene_id "ENSG00000223972"; as ENSG00000223972
+                            // printf("the name of ided is %s\n", gene_info);
+                            mystrcat(gene_info_print, "\t");
+                            mystrcat(gene_info_print, gene_info);
                         }
 
-                        if (gene_info[6] == 'n') //gene_name 
+                        if (gene_info[6] == 'n') //gene_name
                         {
-                            again_remove_double_quotes(&gene_info);
-                            printf("the name of genename ided is %s\n", gene_info);
+                            remove_double_quotes(&gene_info); //make gene_name "DDX11L1"  as DDX11L1
+                            //   printf("the name of genename ided is %s\n", gene_info);
+                            mystrcat(gene_info_print, "\t");
+                            mystrcat(gene_info_print, gene_info);
                         }
 
                         if (gene_info[6] == 's') //  gene_
                         {
-                            again_remove_double_quotes(&gene_info);
-                            printf("the name of source ided is %s\n", gene_info);
+                            remove_double_quotes(&gene_info); //make gene_source "ensembl_havana" as  ensembl_havana
+                            //printf("the name of source ided is %s\n", gene_info);
+                            mystrcat(gene_info_print, "\t");
+                            mystrcat(gene_info_print, gene_info);
                         }
 
-                        if (gene_info[6] == 'b') //gene_biotype 
+                        if (gene_info[6] == 'b') //gene_biotype
                         {
-                            again_remove_double_quotes(&gene_info);
-                            printf("the name of biotype ided is %s\n", gene_info);
+                            remove_double_quotes(&gene_info); //make gene_biotype "pseudogene" as  pseudogene
+                            // printf("the name of biotype ided is %s\n", gene_info);
+                            mystrcat(gene_info_print, "\t");
+                            mystrcat(gene_info_print, gene_info);
                         }
-                        //printf("Gene name is about to print %s\n", gene_name);
+
                         gene_info = strtok(NULL, ";");
                     }
-                    break; //move out of the while loop of line parsing.
+                    printf("%s\n", gene_info_print); //print it on the screen
+                    break;                           //move out of the while loop of line parsing.
                 }
                 ///parsing of column with gene info ends
 
@@ -143,3 +147,4 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+//main function ends
