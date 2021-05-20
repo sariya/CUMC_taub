@@ -5,6 +5,31 @@
 #include "functions_group.h"
 //Date 05 17 2021
 
+void replace_semi_colon(char *temp_snp_string)
+{
+    /**
+     * //make chr20:54159075:G:A to chr20:54159075_G/A
+     * 
+    */
+    size_t count_colon = 0, index_itr = 0;
+
+    while (*(temp_snp_string + index_itr))
+    {  
+        if (*(temp_snp_string + index_itr) == ':')
+        {
+            count_colon++; //make chr20:54159075:G:A to chr20:54159075_G/A
+            if (count_colon == 2)
+            {
+                *(temp_snp_string + index_itr) = '_';
+            }
+            if (count_colon == 3)
+            {
+                *(temp_snp_string + index_itr) = '/';
+            }
+        }
+        index_itr++;
+    }
+}
 // //////////////////////////////////////
 int main(int argc, char *argv[])
 {
@@ -13,6 +38,8 @@ int main(int argc, char *argv[])
      * gcc -Wpedantic -Wextra -Wall main_parse_gtf.c -o gtf_parse
      * 
      * ./create_group  input_gene_annot.txt  checkoutput
+     * // New output in seedNum_126820	chr1:32300_A/C	chr1:32301_A/C	chr1:32302_A/C
+     * 
     */
     if (argc != 3)
     {
@@ -26,6 +53,7 @@ int main(int argc, char *argv[])
 
     if (fp == NULL)
     {
+        fprintf(stderr, "Input file for annotation isn't correct. Exiting\n");
         exit(EXIT_FAILURE);
     }
 
@@ -47,14 +75,18 @@ int main(int argc, char *argv[])
 
         while (token != NULL)
         {
+            snp_name_parsed[0] = '\0';
             if (count_split == 1)
             {
                 copy_strings(token, gene_name, MAX_LEN_GENE);
             }
             if (count_split == 2)
             {
-                copy_strings(token, snp_name_parsed, MAX_LEN_SNP);
 
+                mystrcat(snp_name_parsed, "chr");     
+                mystrcat(snp_name_parsed, token);
+                replace_semi_colon(snp_name_parsed);
+     
                 char *snp_info = NULL;
                 snp_info = strtok(token, ":"); //
                 int count_snp_split = 1;
@@ -80,8 +112,8 @@ int main(int argc, char *argv[])
             token = strtok(NULL, delimiters);
         }
     }
-
-    printf("total number of nodes in gene are %x\n", get_length_gene_nodes(start_gene));
+    // New output in seedNum_126820	chr1:32300_A/C	chr1:32301_A/C	chr1:32302_A/C
+    printf("total number of nodes in gene are %u\n", get_length_gene_nodes(start_gene));
 
     //display_gene_list(start_gene);
 
@@ -90,5 +122,4 @@ int main(int argc, char *argv[])
     fclose(fp);
     delete_linked_list_gene(&start_gene); //delete gene linked list
     return 0;
-
 }
