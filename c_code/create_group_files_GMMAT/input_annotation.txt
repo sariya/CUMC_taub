@@ -1,0 +1,10 @@
+Chr	Start	End	Ref	Alt	Func.refGene	Gene.refGene	GeneDetail.refGene	ExonicFunc.refGene	AAChange.refGene	SIFT_score	SIFT_pred	Polyphen2_HDIV_score	Polyphen2_HDIV_pred	Polyphen2_HVAR_score	Polyphen2_HVAR_pred	LRT_score	LRT_pred	MutationTaster_score	MutationTaster_pred	MutationAssessor_score	MutationAssessor_pred	FATHMM_score	FATHMM_pred	PROVEAN_score	PROVEAN_pred	VEST3_score	CADD_raw	CADD_phred	DANN_score	fathmm-MKL_coding_score	fathmm-MKL_coding_pred	MetaSVM_score	MetaSVM_pred	MetaLR_score	MetaLR_pred	integrated_fitCons_score	integrated_confidence_value	GERP++_RS	phyloP7way_vertebrate	phyloP20way_mammalian	phastCons7way_vertebrate	phastCons20way_mammalian	SiPhy_29way_logOdds
+13	18517016	18517016	T	G	intergenic	FAM230C,LINC00417	dist=285000;dist=221084	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.
+13	18568197	18568197	C	T	intergenic	FAM230C,LINC00417	dist=336181;dist=169903	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.
+13	18625971	18625971	C	T	intergenic	FAM230C,LINC00417	dist=393955;dist=112129	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.
+13	18640488	18640488	C	T	intergenic	FAM230C,LINC00417	dist=408472;dist=97612	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.
+13	18646342	18646342	A	T	intergenic	FAM230C,LINC00417	dist=414326;dist=91758	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.
+13	18649277	18649277	T	A	intergenic	FAM230C,LINC00417	dist=417261;dist=88823	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.
+13	18654259	18654259	C	T	intergenic	FAM230C,LINC00417	dist=422243;dist=83841	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.
+13	18655189	18655189	A	G	intergenic	FAM230C,LINC00417	dist=423173;dist=82911	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.
+13	18666479	18666479	C	G	intergenic	FAM230C,LINC00417	dist=434463;dist=71621	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.	.
