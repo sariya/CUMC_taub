@@ -12,8 +12,13 @@ int main(int argc, char *argv[])
      * we will read file from the user and output it in a tab delimited manner
      * 
     */
+    if (argc != 3)
+    {
+        printf("we have incorrect number of input params\n");
+        return -1;
+    }
 
-    FILE *fp_annovar = fopen("input_annotation.txt", "r");
+    FILE *fp_annovar = fopen(argv[1], "r"); //FILE *fp_annovar = fopen("input_annotation.txt", "r");
 
     if (fp_annovar == NULL)
     {
@@ -26,8 +31,16 @@ int main(int argc, char *argv[])
 
     const char *delimiters = "\t "; //use this for spliting lines
 
-    char final_string[9000]; //ANKRD62P1-PARP4P3	chr22	17102891	G	T	1
+    char final_string[9000];      //ANKRD62P1-PARP4P3	chr22	17102891	G	T	1
     char string_annotation[7000]; //chr22	17102891	G	T	1
+
+    FILE *write_ptr = fopen(argv[2], "a"); //use this pointer to print gene and SNP
+
+    if (write_ptr == NULL)
+    {
+        printf("In print_group_files we have error in file opening for print\n");
+        exit(EXIT_FAILURE);
+    }
 
     while ((getline(&line, &len, fp_annovar)) != -1)
     {
@@ -88,7 +101,7 @@ int main(int argc, char *argv[])
 
                 if (count_split == 7)
                 {
-                    //iterate over the column with gene infomration 
+                    //iterate over the column with gene infomration
                     if (strcmp(token, ".") != 0)
                     {
 
@@ -104,9 +117,9 @@ int main(int argc, char *argv[])
                             final_string[0] = '\0';
                             mystrcat(final_string, token_gene);
                             mystrcat(final_string, "\t");
-                            //
                             mystrcat(final_string, string_annotation);
-                            printf("%s\n", final_string);
+
+                            fprintf(write_ptr, "%s\n", final_string); //   printf("%s\n", final_string);
                             token_gene = strtok(NULL, delimiters_gene);
                         }
                         //while tokenizing ends
@@ -130,6 +143,7 @@ int main(int argc, char *argv[])
         check_line_counter++;
     }
     //while loop ends
+    fclose(write_ptr);
     fclose(fp_annovar);
     return 0;
 }
