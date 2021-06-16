@@ -2,6 +2,10 @@
 #06 16 2021
 
 
+.libPaths(c( "/home/ss5505/libraries_R/R_LIB4.0",.libPaths()))
+ 
+library(Cairo)
+library(ggplot2)
 
 CairoTIFF(filename = "coloredbox_brains.tiff", height=800, width=900) ## TIFF image
 ##CairoTIFF(filename = "box_brains_04.26.2021.tiff", height=80, width=80, units="mm", dpi=300) ## TIFF image
