@@ -22,15 +22,15 @@ int main(int argc, char *argv[])
     data_store *start_second = NULL; //hold gene names of other CHR
     //    print_help(argc, argv);
 
-    if (argc != 5)
+    if (argc != 6)
     {
         printf("incorrect number of arguments are %d\n", argc);
         printf("./combinate_across small_CHR11.txt 11 small_CHR8.txt 8\n");
         return -1;
     }
 
-    concatenate_str(chr_first, argv[2]);
-    concatenate_str(chr_second, argv[4]);
+    concatenate_str(chr_first, argv[2]); //make CHR21
+    concatenate_str(chr_second, argv[4]); //make CHR12
 
     fptr_first = fopen(argv[1], "r");
 
@@ -79,11 +79,10 @@ int main(int argc, char *argv[])
 
     printf("we have so many genes %d\n", check_length(start_one));
     printf("we have so many genes %d\n", check_length(start_second));
-    // display_list(start_one);
-    // display_list(start_second);
-    printf("The new chrs are %s\n", chr_first);
-    printf("The new chrs are %s\n", chr_second);
+    // display_list(start_one); // display_list(start_second);
+    
     create_combination(start_one, start_second,chr_first, chr_second ,argv[5]);
+
     delete_linked_list(&start_one);
     delete_linked_list(&start_second);
 

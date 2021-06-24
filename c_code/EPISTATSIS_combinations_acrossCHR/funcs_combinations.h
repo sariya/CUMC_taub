@@ -16,7 +16,7 @@ typedef struct genes
 data_store *return_node() ; //create node 
 
 int check_length(data_store *headnode) ; // return length of linked list
-char *gene_combination(char *st1, char *st2, char *temp_string_with_asterix, char glue) ;
+char *gene_combination(char *st1, char *st2, char *temp_string_with_asterix, char glue) ; //make gene combination
 
 void add_node(data_store **headnode, char *temp); // add node to the data linned list
 void create_combination( data_store *node_temp_gene, data_store *start_second_list, char *, char*, char *file_name) ; //GENE1 and GENE2 returned GENE1*GENE2
@@ -25,5 +25,5 @@ void get_gene_name(char temp_line[]) ; // extract gene name from read line from 
 void display_list(data_store *headnode); //print linked list 
 void delete_linked_list(); // delete nodes from the linked list
 
-void concatenate_str(char *, char *) ; //use it for CHR making
+void concatenate_str(char *name_str, char *chr_str) ; //join two strings
 #endif
