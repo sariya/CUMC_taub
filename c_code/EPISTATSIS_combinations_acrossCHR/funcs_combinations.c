@@ -36,7 +36,7 @@ void concatenate_str(char *name_str, char *chr_str)
         second_itr++;
         itr++;
     }
-    *(name_str + CHR_LEN-1 ) = '\0'; //chr_LEN is defined in the include headers
+    *(name_str + CHR_LEN - 1) = '\0'; //chr_LEN is defined in the include headers
 }
 /////////////////////////////////////////////////
 void delete_linked_list(data_store **headnode)
@@ -85,11 +85,17 @@ void remove_trailingspaces(char *newlines)
 ///////////////////////////////////////////
 void get_gene_name(char temp_line[])
 {
+    /**
+     * 1 123 156 GENE1
+     * We will extract GENE1 from the line. It is space/tab separated
+     */
+
     int space_count = 0; //store location of space
     size_t itr = 0;
     size_t len_line = strlen(temp_line);
     if (len_line == 0)
     {
+        printf("in get_gene_name function len_line is zero. Exiting");
         return;
     }
 
@@ -114,6 +120,10 @@ void get_gene_name(char temp_line[])
 ///////////////////////////////////////////
 data_store *return_node()
 {
+    /**
+     * 
+     * Return malloc node address
+     */
     data_store *tempaddress = malloc(sizeof(data_store));
     return (tempaddress);
 }
@@ -121,6 +131,10 @@ data_store *return_node()
 
 void add_node(data_store **headnode, char *temp)
 {
+    /**
+     * 
+     * Add node to the linked list
+     */
     data_store *temp_node_pointer = *headnode;
     data_store *temp_node = return_node();
 
@@ -145,6 +159,9 @@ void add_node(data_store **headnode, char *temp)
 
 int check_length(data_store *headnode)
 {
+    /**
+     * Function to check linked list lenght. Return -1 if head is null
+    */
     int length = 0;
     if (headnode == NULL)
     {
@@ -165,6 +182,11 @@ int check_length(data_store *headnode)
 ///////////////////////////////////////////////////
 char *gene_combination(char *st1, char *st2, char *temp_string_with_asterix, char glue)
 {
+    /**
+     * Input provided is gene1, gene2, _ and final destination string.
+     * Output is gene1*gene2 or gene1_gene2 However is the glue.
+     * 
+    */
     size_t dest_maxlen = MAX_LEN; //max len is from common include functions
 
     size_t left_len = strlen(st1);
@@ -188,11 +210,11 @@ void display_list(data_store *headnode)
      * Function to display linkedlist 
      * 
     */
-   if(headnode ==NULL){
-       printf("Nothing to display\n");
-       return;
-
-   }
+    if (headnode == NULL)
+    {
+        printf("Nothing to display in display_list function\n");
+        return;
+    }
     while ((headnode) != NULL)
     {
         printf("we have so and so name %s\n", (headnode)->name);
@@ -203,56 +225,59 @@ void display_list(data_store *headnode)
 ////////////////////////////////////////////////
 void create_combination(data_store *node_temp_gene, data_store *start_second_list, char *chr_one, char *chr_second, char *file_name)
 {
+    /**
+     * Take two linked list head node. Read gene names. Iterate and make combinations. 
+     * make CHR18_gene1 and CHR19_gene23
+     * print CHR18_gene1*CHR19_gene23
+    */
     data_store *iterate = node_temp_gene;
     data_store *iterate2 = start_second_list;
     char temp_string_with_asterix[MAX_LEN];
 
-    // FILE *write_ptr; //use this pointer to write combinations
+     FILE *write_ptr; //use this pointer to write combinations
 
     if (file_name == NULL)
     {
-        printf("we have error with file name \n");
+        printf("we have error with file name in create_combination function\n");
+        return ;
     }
 
     if (iterate2 == NULL)
     {
-        printf("Nothing in the second linked list\n");
+        printf("Nothing in the second linked listin create_combination function\n");
         return;
     }
-    //write_ptr = fopen(file_name, "a");
+    write_ptr = fopen(file_name, "a");
 
-    if (check_length(node_temp_gene) == 1 || check_length(node_temp_gene) == 0)
+    if ( check_length(node_temp_gene) == 0)
+    //if (check_length(node_temp_gene) == 1 || check_length(node_temp_gene) == 0)
     {
-        printf("nothing to make combination of\n");
+        printf("nothing to make combination of. In create_combination function. Exiting\n");
         return;
     }
     else
     {
         while (iterate != NULL)
         {
-            iterate2 = start_second_list;
+            iterate2 = start_second_list; //start from the beginning
             while (iterate2 != NULL)
             {
                 char gene_one[MAX_LEN]; //make CHR10_gene1
                 char gene_two[MAX_LEN]; //make  CHR1_gene2
-                gene_one[0] = '\0';
-                gene_two[0] = '\0';
+        
+                gene_combination(chr_one, iterate->name, gene_one, '_'); //make CHR21_GENE21
+                gene_combination(chr_second, iterate2->name, gene_two, '_'); //make CHR11_GENE20
 
-                gene_combination(chr_one, iterate->name, gene_one, '_');
-                gene_combination(chr_second, iterate2->name, gene_two, '_');
+                gene_combination(gene_one, gene_two, temp_string_with_asterix, '*'); //make asterikx CHR11_GENE20*CHR21_GENE21
 
-                gene_combination(gene_one, gene_two, temp_string_with_asterix, '*'); //make asterikx
-
-                printf("%s\n", temp_string_with_asterix);
-                
-                //fprintf(write_ptr, "%s\n", temp_string_with_asterix);
+                fprintf(write_ptr, "%s\n", temp_string_with_asterix);
 
                 iterate2 = iterate2->next;
             }
             /// while iterate2 ends
             iterate = iterate->next;
         } //while iterate ends
-          // fclose(write_ptr);
+           fclose(write_ptr);
     }
 }
 ////////////////////////////////////////////////////////////////////////////
