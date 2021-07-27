@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
 
     while ((getline(&line, &len, fp)) != -1)
     {
+        //printf("%s\n ", line);
         char *token = NULL;
         remove_trailingspaces(line); //remove trailing new line character
 
@@ -45,7 +46,7 @@ int main(int argc, char *argv[])
         char snp_name_parsed[MAX_LEN_SNP]; //chr1:33879_A/C
         snp_name_parsed[0] = '\0';
         //char gene_name[MAX_LEN_GENE];
-        char *SNP_POS=NULL;
+        char *SNP_POS = NULL;
         if (check_line_counter >= 1)
         {
             while (token != NULL)
@@ -59,7 +60,7 @@ int main(int argc, char *argv[])
                 if (count_split == 2)
                 {
                     //position
-                    SNP_POS=token; //use this to add linked list and perform juggling
+                    SNP_POS = token;                  //use this to add linked list and perform juggling
                     mystrcat(snp_name_parsed, token); // make chr1:32300
                     mystrcat(snp_name_parsed, "_");
                 }
@@ -101,13 +102,16 @@ int main(int argc, char *argv[])
                     {
                         //printf("we have gene %s %s\n", snp_name_parsed, gene_token);
 
-                        if (search_gene(&start_gene,  gene_token) == 0)
+                        if (search_gene(&start_gene, gene_token) == 0)
                         {
                             fprintf(stderr, "No gene is not added %s\n", gene_token);
-                            gene_add_node(&start_gene, gene_token, snp_name_parsed, (unsigned int)strtoull(SNP_POS,NULL,0));
-                        }                         
-                        else{
-                            add_SNP_to_exiting_gene(&start_gene,gene_token,snp_name_parsed, (unsigned int)strtoull(SNP_POS,NULL,0));
+                            gene_add_node(&start_gene, gene_token, snp_name_parsed, (unsigned int)strtoull(SNP_POS, NULL, 0));
+                            //printf("we have added SNP %s to gene %s. New list \n", snp_name_parsed, gene_token);
+                        }
+                        else
+                        {
+                            add_SNP_to_exiting_gene(&start_gene, gene_token, snp_name_parsed, (unsigned int)strtoull(SNP_POS, NULL, 0));
+                            //  printf("we have added SNP %s to gene %s. Existing list \n", snp_name_parsed, gene_token);
                         }
 
                         gene_token = strtok(NULL, delimit_gene);
@@ -125,14 +129,16 @@ int main(int argc, char *argv[])
 
         check_line_counter++;
     }
+    fclose(fp);
+
     // New output in seedNum_126820	chr1:32300_A/C	chr1:32301_A/C	chr1:32302_A/C
     printf("total number of nodes in gene are %u\n", get_length_gene_nodes(start_gene));
 
     //display_gene_list(start_gene);
-
+    get_SNP_counts_within_gene(start_gene); //this will get counts of SNPs within each gene
+    printf("all done. now printing......\n");
     print_group_files(start_gene, argv[2]); //print onto the file
 
-    fclose(fp);
     delete_linked_list_gene(&start_gene); //delete gene linked list
     return 0;
 }

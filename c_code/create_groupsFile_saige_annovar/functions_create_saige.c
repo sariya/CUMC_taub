@@ -9,6 +9,7 @@
 //Date 07 26 2021
 
 /////////////
+
 unsigned int nodes_snp_list(snp_store *temp_head_node)
 {
     /**
@@ -52,7 +53,7 @@ void display_gene_list(gene_store *headnode)
         //printf("we have gene name %s \n", (headnode)->name);
         snp_store *temp_address_to_print = headnode->first_snp;
 
-        unsigned int temp_count_snps_gene_list = nodes_snp_list(temp_address_to_print);
+        unsigned int temp_count_snps_gene_list = nodes_snp_list(temp_address_to_print); //get SNPs present in the gene
         mystrcat(string_annotation, (headnode)->name);
 
         if (temp_count_snps_gene_list == 1)
@@ -103,7 +104,7 @@ void print_group_files(gene_store *headnode, char *outfile)
      * Function to display linkedlist 
      * 
     */
-  // FILE *write_ptr = fopen(outfile, "a+");
+    // FILE *write_ptr = fopen(outfile, "a+");
     FILE *write_ptr = fopen(outfile, "a"); //use this pointer to print gene and SNP
 
     if (write_ptr == NULL)
@@ -120,12 +121,13 @@ void print_group_files(gene_store *headnode, char *outfile)
 
     while ((headnode) != NULL)
     {
-        char string_annotation[700000];
+        char string_annotation[1100000];
         string_annotation[0] = '\0';
 
         snp_store *temp_address_to_print = headnode->first_snp;
 
         unsigned int temp_count_snps_gene_list = nodes_snp_list(temp_address_to_print);
+
         mystrcat(string_annotation, (headnode)->name);
 
         if (temp_count_snps_gene_list == 1)
@@ -298,10 +300,8 @@ void gene_add_node(gene_store **headnode, char *temp_gene, char *temp_snp, unsig
     temp_snp_node->next_snp_node = NULL;
     temp_snp_node->previous_snp_node = NULL;
 
-    //strcpy(temp_snp_node->snp_name, temp_snp);
     copy_strings(temp_snp, temp_snp_node->snp_name, MAX_LEN_SNP);
 
-    //strcpy(temp_node->name, temp_gene);
     copy_strings(temp_gene, temp_node->name, MAX_LEN_GENE);
 
     temp_node->next = NULL; //gene node next null
@@ -400,7 +400,7 @@ int search_gene(gene_store **headnode, char *temp_gene_name)
      * function returns 1 if gene is already in the linked list
     */
     int flag_found_gene = 0; //return 1 if gene is found in the linked list
-    
+
     if (*headnode == NULL)
     {
         fprintf(stderr, "No linked list exists. Exiting search_gene %s\n", temp_gene_name);
@@ -473,4 +473,30 @@ void delete_linked_list_gene(gene_store **headnode)
 }
 ////////////////// delete_linked_list_gene function ends
 
-///////////
+void get_SNP_counts_within_gene(gene_store *headnode)
+{
+    /**
+    * added on 07 27 2021
+    * The idea is to get all SNPs present in the Gene. To print for verification purposes only
+    */
+    if (headnode != NULL)
+    {
+        while ((headnode) != NULL)
+        {
+            snp_store *temp_address_to_print = (headnode)->first_snp;
+            unsigned int count_snps_gene_list = nodes_snp_list(temp_address_to_print); //get SNPs present in the gene
+            printf("%s with SNP counts %u\n", headnode->name, count_snps_gene_list);
+
+            headnode = headnode->next ; 
+            //while loop for gene iteration ends
+        } //while loop of headnode ends
+    } 
+    //if check ends 
+
+    else
+    {
+        printf("function get_SNP_counts_within_gene; there is an issue with Gene list\n. Exiting ");
+    }
+//exiting function
+}
+///function ends

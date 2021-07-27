@@ -39,5 +39,7 @@ char *mystrcat(char *dest, char *src) ;
 void print_group_files(gene_store *headnode, char *outfile);
 void delete_linked_list_gene(gene_store **headnode); 
 
+void get_SNP_counts_within_gene(gene_store *headnode); //we added this on 07 27 2021
+
 #endif
 
