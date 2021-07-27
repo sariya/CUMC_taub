@@ -140,5 +140,6 @@ int main(int argc, char *argv[])
     print_group_files(start_gene, argv[2]); //print onto the file
 
     delete_linked_list_gene(&start_gene); //delete gene linked list
+    printf("all done. exiting after deleting SNPs and genes list......\n");
     return 0;
 }
