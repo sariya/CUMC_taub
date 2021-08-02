@@ -5,22 +5,44 @@
 //#include <algorithm>
 #include <string>
 #include <iostream>
+
 #include "functions_parse_gtf.hpp"
+
+static struct option long_opts[]={
+    /* ... */
+    {"gtf_file", required_argument, NULL, 'g'}, //use this for annotation input file
+    {"out_file", required_argument, NULL, 'o'}, //use this for output file
+    {NULL, 0, NULL, 0}};
+static char short_option[]="g:o:h"; //use this for parsing // this could have  *short_option
 
 int main(int argc, char *argv[])
 {
-    // g++ c14 supported https://stackoverflow.com/a/34681870/2740831
-    /**
-     * take in GTF file. Print on the terminal CHR start, end, ensembl id, gene name and gene-biotype
-     * //  gcc -Wpedantic -Wextra -Wall main_parse_gtf.c -o gtf_parse
-     * //  make clean ; make ; ./gtf_parse  > genes
-     * //  cat test.gtf | grep gene | grep -v exon | grep -v transcript
-     * //  printf "CHR    START    END    ENSEMBL_IDGENE_NAME    GENE_SOURCE    GENE_BIOTYPE\n" >genes_CHR37
-    */
+    
+    char *gtf_file = NULL;    // arg for GTF file .
+    char *output_file = NULL; // arg for output  file .
 
-    ///mnt/mfs/ctcn/resources/GRCh38/v1/Homo_sapiens.GRCh38.93.filtered.gtf
-    //FILE *fp_gtf = fopen("/mnt/mfs/ctcn/resources/GRCh38/v1/Homo_sapiens.GRCh38.93.gtf", "r"); // /mnt/mfs/ctcn/resources/GRCh38/v1/Homo_sapiens.GRCh38.93.filtered.gtf
-    FILE *fp_gtf = fopen("test.gtf", "r"); // /mnt/mfs/ctcn/resources/GRCh38/v1/Homo_sapiens.GRCh38.93.filtered.gtf
+    assign_variables(argc, argv, short_option, long_opts, &gtf_file, &output_file);
+    
+    if (gtf_file == NULL)
+    {
+        printf("We do not have GTF file. Exiting\n");
+        exit(0);
+    }
+
+    if (output_file == NULL)
+    {
+        printf("We do not have output file. Exiting\n");
+        exit(0);
+    }
+
+    if (argc != 5)
+    {
+        printf("we do not have sufficient arguments\n");
+        print_usage();
+        exit(0);
+    }
+
+    FILE *fp_gtf = fopen(gtf_file, "r"); // /mnt/mfs/ctcn/resources/GRCh38/v1/Homo_sapiens.GRCh38.93.filtered.gtf     //FILE *fp_gtf = fopen("test.gtf", "r"); // /mnt/mfs/ctcn/resources/GRCh38/v1/Homo_sapiens.GRCh38.93.filtered.gtf
 
     if (fp_gtf == NULL)
         exit(EXIT_FAILURE);
@@ -30,12 +52,11 @@ int main(int argc, char *argv[])
 
     const char *delimiters = "\t";                                           //use this for spliting lines
     std::map<std::string, std::pair<std::string, std::string>> map_gene_chr; // APOE(key) APOE CHR19 <value> (pair)
+
     while ((getline(&line, &len, fp_gtf)) != -1)
     {
-
         if (line[0] != '#')
         {
-
             gene gene_temp_info = gene(); //make a new struct of gene
             char *token = NULL;
             remove_trailingspaces(line); //remove trailing new line character
@@ -120,14 +141,24 @@ int main(int argc, char *argv[])
 
                     if (map_gene_chr.count(gene_temp_info.gene_name) > 0)
                     {
-                        std::cout << " is an element of map\n";
-                        //check if chr also matches
+                        std::cout << gene_temp_info.gene_name << " is an element of map\n";
 
+                        if ((map_gene_chr[gene_temp_info.gene_name].second).compare(gene_temp_info.chromosome) == 0)
+                        {
+                            //check if same CHR. Then only add _dup. Same gene name on diff CHR aren't concern at the moment
+                            gene_temp_info.gene_name = gene_temp_info.gene_name + "_dup";
+                            map_gene_chr.insert({gene_temp_info.gene_name, {gene_temp_info.gene_name, gene_temp_info.chromosome}});
+                        }
+                        else
+                        {
+                            std::cout << gene_temp_info.gene_name << " same gene name but Diff CHR\n";
+                        }
                     }
+                    //if ends if gene already exists
 
                     else
                     {
-                        //https://stackoverflow.com/a/59484450/2740831
+                        //gene name is new and has not been added to the map                         //https://stackoverflow.com/a/59484450/2740831
                         map_gene_chr.insert({gene_temp_info.gene_name, {gene_temp_info.gene_name, gene_temp_info.chromosome}});
                     }
 
@@ -168,3 +199,14 @@ int main(int argc, char *argv[])
     return 0;
 }
 //main function ends
+
+// g++ c14 supported https://stackoverflow.com/a/34681870/2740831
+/**
+     * take in GTF file. Print on the terminal CHR start, end, ensembl id, gene name and gene-biotype
+     * //  gcc -Wpedantic -Wextra -Wall main_parse_gtf.c -o gtf_parse
+     * //  make clean ; make ; ./gtf_parse  > genes
+     * //  cat test.gtf | grep gene | grep -v exon | grep -v transcript
+     * //  printf "CHR    START    END    ENSEMBL_IDGENE_NAME    GENE_SOURCE    GENE_BIOTYPE\n" >genes_CHR37
+    */
+
+//FILE *fp_gtf = fopen("/mnt/mfs/ctcn/resources/GRCh38/v1/Homo_sapiens.GRCh38.93.gtf", "r"); // /mnt/mfs/ctcn/resources/GRCh38/v1/Homo_sapiens.GRCh38.93.filtered.gtf
