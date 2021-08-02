@@ -4,7 +4,9 @@
 #include <map>
 //#include <algorithm>
 #include <string>
+
 #include <iostream>
+#include <fstream>
 
 #include "functions_parse_gtf.hpp"
 
@@ -34,6 +36,8 @@ int main(int argc, char *argv[])
         printf("We do not have output file. Exiting\n");
         exit(0);
     }
+    std::ofstream GTF_output_stream(output_file);
+    GTF_output_stream<<"CHR\tGENE_ID\tGENE_NAME\tSTART\tEND\tGENE_SOURCE\tGENE_TYPE\n";
 
     if (argc != 5)
     {
@@ -141,7 +145,7 @@ int main(int argc, char *argv[])
 
                     if (map_gene_chr.count(gene_temp_info.gene_name) > 0)
                     {
-                        std::cout << gene_temp_info.gene_name << " is an element of map\n";
+                        std::cerr << gene_temp_info.gene_name << " is an element of map\n";
 
                         if ((map_gene_chr[gene_temp_info.gene_name].second).compare(gene_temp_info.chromosome) == 0)
                         {
@@ -151,7 +155,7 @@ int main(int argc, char *argv[])
                         }
                         else
                         {
-                            std::cout << gene_temp_info.gene_name << " same gene name but Diff CHR\n";
+                            std::cerr << gene_temp_info.gene_name << " same gene name but Diff CHR\n";
                         }
                     }
                     //if ends if gene already exists
@@ -162,11 +166,11 @@ int main(int argc, char *argv[])
                         map_gene_chr.insert({gene_temp_info.gene_name, {gene_temp_info.gene_name, gene_temp_info.chromosome}});
                     }
 
-                    std::cout << gene_temp_info.chromosome << '\t' << gene_temp_info.gene_id << '\t' << gene_temp_info.gene_name
-                              << '\t' << gene_temp_info.start_position << '\t'
-                              << gene_temp_info.end_position << '\t'
-                              << gene_temp_info.GENE_SOURCE << '\t'
-                              << gene_temp_info.GENE_BIOTYPE << '\t' << '\n';
+                    GTF_output_stream << gene_temp_info.chromosome << '\t' << gene_temp_info.gene_id << '\t' << gene_temp_info.gene_name
+                               << '\t' << gene_temp_info.start_position << '\t'
+                               << gene_temp_info.end_position << '\t'
+                               << gene_temp_info.GENE_SOURCE << '\t'
+                               << gene_temp_info.GENE_BIOTYPE << '\t' << '\n'; //// std::cout << gene_temp_info.chromosome << '\t' << gene_temp_info.gene_id << '\t' << gene_temp_info.gene_name << '\t' << gene_temp_info.start_position << '\t'  << gene_temp_info.end_position << '\t'  << gene_temp_info.GENE_SOURCE << '\t'  << gene_temp_info.GENE_BIOTYPE << '\t' << '\n';
 
                     break; //move out of the while loop of line parsing.
                 }
@@ -189,15 +193,10 @@ int main(int argc, char *argv[])
 
     fclose(fp_gtf); //close file
 
-    std::map<std::string, std::pair<std::string, std::string>>::iterator it_map_gene_pair;
-
-    for (it_map_gene_pair = map_gene_chr.begin(); it_map_gene_pair != map_gene_chr.end(); it_map_gene_pair++)
-    {
-        std::cout << it_map_gene_pair->first << '\t' << (it_map_gene_pair->second).first << "\t"
-                  << (it_map_gene_pair->second).second << '\n'; //
-    }
+    GTF_output_stream.close(); //outfile.close();
     return 0;
 }
+
 //main function ends
 
 // g++ c14 supported https://stackoverflow.com/a/34681870/2740831

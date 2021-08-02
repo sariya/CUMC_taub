@@ -216,3 +216,12 @@ void remove_double_quotes(char **temp_gene_info)
 //     return --dest;
 // }
 ////////////////////////////
+
+
+    // std::map<std::string, std::pair<std::string, std::string>>::iterator it_map_gene_pair;
+
+    // for (it_map_gene_pair = map_gene_chr.begin(); it_map_gene_pair != map_gene_chr.end(); it_map_gene_pair++)
+    // {
+    //     std::cout << it_map_gene_pair->first << '\t' << (it_map_gene_pair->second).first << "\t"
+    //               << (it_map_gene_pair->second).second << '\n'; //
+    // }
