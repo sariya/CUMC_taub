@@ -6,3 +6,10 @@ Analysis for grch38
 Run as 
 
 ./create_group_gmmat -a input_annotation.txt -o check_output.txt
+
+./create_group_gmmat --annov_file input_annotation.txt -o test_out.txt
+
+./create_group_gmmat --a input_annotation.txt --out_file small_output.txt
+
+./create_group_gmmat --annov_file input_annotation.txt --out_file output.txt
+
