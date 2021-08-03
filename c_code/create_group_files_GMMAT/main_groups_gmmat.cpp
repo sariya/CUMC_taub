@@ -28,12 +28,14 @@ int main(int argc, char *argv[])
     if (annov_file == NULL)
     {
         printf("We do not have annovar file. Exiting\n");
+        print_usage();
         exit(0);
     }
 
     if (output_file == NULL)
     {
         printf("We do not have output file. Exiting\n");
+        print_usage();
         exit(0);
     }
 
@@ -84,8 +86,8 @@ int main(int argc, char *argv[])
                 {
                     if (strlen(token) == 1 && strcmp(token, ".") != 0)
                     {
-                        //Ref allele
-                        annot_string = annot_string + token + '\t';//mystrcat(string_annotation, "\t");    mystrcat(string_annotation, token);
+                        //Ref allele CHR1 123(position) A
+                        annot_string = annot_string + token + '\t';//mystrcat(string_annotation, "\t"); mystrcat(string_annotation, token);
                     }
                     else
                     {
@@ -98,7 +100,7 @@ int main(int argc, char *argv[])
                 {
                     if (strlen(token) == 1 && strcmp(token, ".") != 0)
                     {
-                        //alt allele
+                        //alt allele CHR1 123(position) A T
                         annot_string = annot_string + token + '\t' + "1";
                     }
                     else
@@ -120,7 +122,7 @@ int main(int argc, char *argv[])
                         while (token_gene != NULL)
                         {
                             gene_name = token_gene;
-                            gene_name = gene_name + '\t';   
+                            gene_name = gene_name + '\t';   //GENE_NAME CHR1 123(position) A T
                             gmmat_output_stream << gene_name + annot_string << '\n';
                             gene_name=""; //assign no string to gene
                             token_gene = strtok(NULL, delimiters_gene);
@@ -151,9 +153,7 @@ int main(int argc, char *argv[])
         free(line);
     }
 
-    //while loop ends
-
-    fclose(fp_annovar);
+    fclose(fp_annovar); // close file reading
     gmmat_output_stream.close(); //outfile.close();
     return 0;
 }
