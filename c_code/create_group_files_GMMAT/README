@@ -3,3 +3,6 @@ Date 06 15 2021
 We need group file for GMMAT gene-based analysis
 Analysis for grch38
 
+Run as 
+
+./create_group_gmmat -a input_annotation.txt -o check_output.txt
