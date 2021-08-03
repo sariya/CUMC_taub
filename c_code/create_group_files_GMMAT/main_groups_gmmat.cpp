@@ -2,8 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "functions_groups_gmmat.h"
+#include <iostream>
+#include <fstream>
 
+#include "functions_groups_gmmat.hpp"
+
+static struct option long_opts[] = {
+    /* ... */
+    {"annov_file", required_argument, NULL, 'a'}, //use this for annotation input file
+    {"out_file", required_argument, NULL, 'o'},   //use this for output file
+    {NULL, 0, NULL, 0}};
+static char short_option[] = "a:o:h"; //use this for parsing // this could have  *short_option
 // //////////////////////////////////////
 int main(int argc, char *argv[])
 {
@@ -12,13 +21,25 @@ int main(int argc, char *argv[])
      * we will read file from the user and output it in a tab delimited manner
      * 
     */
-    if (argc != 3)
+    char *annov_file = NULL;  // arg for annovar file .
+    char *output_file = NULL; // arg for output file .
+    assign_variables(argc, argv, short_option, long_opts, &annov_file, &output_file);
+
+    if (annov_file == NULL)
     {
-        printf("we have incorrect number of input params\n");
-        return -1;
+        printf("We do not have annovar file. Exiting\n");
+        exit(0);
     }
 
-    FILE *fp_annovar = fopen(argv[1], "r"); //FILE *fp_annovar = fopen("input_annotation.txt", "r");
+    if (output_file == NULL)
+    {
+        printf("We do not have output file. Exiting\n");
+        exit(0);
+    }
+
+    std::ofstream gmmat_output_stream(output_file);
+
+    FILE *fp_annovar = fopen(annov_file, "r"); //FILE *fp_annovar = fopen(argv[1], "r"); //FILE *fp_annovar = fopen("input_annotation.txt", "r");
 
     if (fp_annovar == NULL)
     {
@@ -29,27 +50,18 @@ int main(int argc, char *argv[])
     size_t len = 0;
     int check_line_counter = 0;
 
-    const char *delimiters = "\t "; //use this for spliting lines
-
-    char final_string[9000];      //ANKRD62P1-PARP4P3	chr22	17102891	G	T	1
-    char string_annotation[7000]; //chr22	17102891	G	T	1
-
-    FILE *write_ptr = fopen(argv[2], "a"); //use this pointer to print gene and SNP
-
-    if (write_ptr == NULL)
-    {
-        printf("In print_group_files we have error in file opening for print\n");
-        exit(EXIT_FAILURE);
-    }
+    const char *delimiters = "\t ";    //use this for spliting lines
+    const char *delimiters_gene = ","; //use this for spliting gene column
 
     while ((getline(&line, &len, fp_annovar)) != -1)
     {
         remove_trailingspaces(line); //remove trailing new line character
+        std::string annot_string = "chr";
+        std::string gene_name;
 
         if (check_line_counter > 1)
         {
-            string_annotation[0] = '\0';
-            char *token = NULL;
+            char *token = NULL; // we use this for splitting and storing
             int count_split = 1; //use this for counting split. as columns are fixed
 
             token = strtok(line, delimiters);
@@ -58,15 +70,13 @@ int main(int argc, char *argv[])
             {
                 if (count_split == 1)
                 {
-                    mystrcat(string_annotation, "chr");
-                    mystrcat(string_annotation, token);
+                    annot_string = annot_string + token + '\t';
                 }
                 //first column check ends
 
                 if (count_split == 2)
                 {
-                    mystrcat(string_annotation, "\t");
-                    mystrcat(string_annotation, token);
+                    annot_string = annot_string + token + '\t'; //std::cout << "we have value as " << annot_string << '\n';
                 }
                 //second column check ends
 
@@ -74,8 +84,8 @@ int main(int argc, char *argv[])
                 {
                     if (strlen(token) == 1 && strcmp(token, ".") != 0)
                     {
-                        mystrcat(string_annotation, "\t");
-                        mystrcat(string_annotation, token);
+                        //mystrcat(string_annotation, "\t");    mystrcat(string_annotation, token);
+                        annot_string = annot_string + token + '\t';
                     }
                     else
                     {
@@ -88,8 +98,7 @@ int main(int argc, char *argv[])
                 {
                     if (strlen(token) == 1 && strcmp(token, ".") != 0)
                     {
-                        mystrcat(string_annotation, "\t");
-                        mystrcat(string_annotation, token);
+                        annot_string = annot_string + token + '\t' + "1";
                     }
                     else
                     {
@@ -104,22 +113,14 @@ int main(int argc, char *argv[])
                     //iterate over the column with gene infomration
                     if (strcmp(token, ".") != 0)
                     {
-
-                        mystrcat(string_annotation, "\t");
-                        mystrcat(string_annotation, "1");
-
-                        const char *delimiters_gene = ","; //use this for spliting gene column
                         char *token_gene = NULL;
                         token_gene = strtok(token, delimiters_gene);
 
                         while (token_gene != NULL)
                         {
-                            final_string[0] = '\0';
-                            mystrcat(final_string, token_gene);
-                            mystrcat(final_string, "\t");
-                            mystrcat(final_string, string_annotation);
-
-                            fprintf(write_ptr, "%s\n", final_string); //   printf("%s\n", final_string);
+                            gene_name = token_gene;
+                            gene_name = gene_name + '\t';   
+                            gmmat_output_stream << gene_name + annot_string << '\n';
                             token_gene = strtok(NULL, delimiters_gene);
                         }
                         //while tokenizing ends
@@ -142,8 +143,15 @@ int main(int argc, char *argv[])
 
         check_line_counter++;
     }
+    //while loop ends of file reading
+    if (line)
+    {
+        free(line);
+    }
+
     //while loop ends
-    fclose(write_ptr);
+    
     fclose(fp_annovar);
+    gmmat_output_stream.close(); //outfile.close();
     return 0;
 }
