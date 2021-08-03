@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
     {
         remove_trailingspaces(line); //remove trailing new line character
         std::string annot_string = "chr";
-        std::string gene_name;
+        std::string gene_name="";
 
         if (check_line_counter > 1)
         {
@@ -70,13 +70,13 @@ int main(int argc, char *argv[])
             {
                 if (count_split == 1)
                 {
-                    annot_string = annot_string + token + '\t';
+                    annot_string = annot_string + token + '\t'; //make chr1
                 }
                 //first column check ends
 
                 if (count_split == 2)
                 {
-                    annot_string = annot_string + token + '\t'; //std::cout << "we have value as " << annot_string << '\n';
+                    annot_string = annot_string + token + '\t'; // CHR1 123(position)
                 }
                 //second column check ends
 
@@ -84,8 +84,8 @@ int main(int argc, char *argv[])
                 {
                     if (strlen(token) == 1 && strcmp(token, ".") != 0)
                     {
-                        //mystrcat(string_annotation, "\t");    mystrcat(string_annotation, token);
-                        annot_string = annot_string + token + '\t';
+                        //Ref allele
+                        annot_string = annot_string + token + '\t';//mystrcat(string_annotation, "\t");    mystrcat(string_annotation, token);
                     }
                     else
                     {
@@ -98,6 +98,7 @@ int main(int argc, char *argv[])
                 {
                     if (strlen(token) == 1 && strcmp(token, ".") != 0)
                     {
+                        //alt allele
                         annot_string = annot_string + token + '\t' + "1";
                     }
                     else
@@ -110,7 +111,7 @@ int main(int argc, char *argv[])
 
                 if (count_split == 7)
                 {
-                    //iterate over the column with gene infomration
+                    //iterate over the column with gene information
                     if (strcmp(token, ".") != 0)
                     {
                         char *token_gene = NULL;
@@ -121,6 +122,7 @@ int main(int argc, char *argv[])
                             gene_name = token_gene;
                             gene_name = gene_name + '\t';   
                             gmmat_output_stream << gene_name + annot_string << '\n';
+                            gene_name=""; //assign no string to gene
                             token_gene = strtok(NULL, delimiters_gene);
                         }
                         //while tokenizing ends
@@ -132,8 +134,8 @@ int main(int argc, char *argv[])
                         break;
                     }
                 }
-                //last column check ends
 
+                //last column check ends
                 count_split++;
                 token = strtok(NULL, delimiters);
             }
@@ -150,7 +152,7 @@ int main(int argc, char *argv[])
     }
 
     //while loop ends
-    
+
     fclose(fp_annovar);
     gmmat_output_stream.close(); //outfile.close();
     return 0;
