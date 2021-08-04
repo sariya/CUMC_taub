@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     int check_line_counter = 0;
 
     const char *delimiters = "\t ";    //use this for spliting lines
-    const char *delimiters_gene = ","; //use this for spliting gene column
+    const char *delimiters_gene = ",;"; //use this for spliting gene column
 
     while ((getline(&line, &len, fp_annovar)) != -1)
     {
