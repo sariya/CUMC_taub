@@ -122,8 +122,13 @@ int main(int argc, char *argv[])
                         while (token_gene != NULL)
                         {
                             gene_name = token_gene;
-                            gene_name = gene_name + '\t';   //GENE_NAME CHR1 123(position) A T
-                            gmmat_output_stream << gene_name + annot_string << '\n';
+
+                            if(gene_name.compare("NONE")!=0 ){
+                                //we ignore all genes that have name as None
+                                gene_name = gene_name + '\t';  //GENE_NAME CHR1 123(position) A T
+                                gmmat_output_stream << gene_name + annot_string << '\n';
+                            }
+                            
                             gene_name=""; //assign no string to gene
                             token_gene = strtok(NULL, delimiters_gene);
                         }
