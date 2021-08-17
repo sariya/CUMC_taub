@@ -44,28 +44,28 @@ void assign_variables(int count_argc, char **argv_array, const char *short_array
 }
 ////////
 
-unsigned int nodes_snp_list(snp_store *temp_head_node)
-{
-    /**
-     * return count of nodes in the snp list within a gene
-    */
+// unsigned int nodes_snp_list(snp_store *temp_head_node)
+// {
+//     /**
+//      * return count of nodes in the snp list within a gene
+//     */
 
-    unsigned int number_of_nodes = 0;
-    if (temp_head_node == NULL)
-    {
-        printf("No SNP nodes in the gene nodes_snp_list function\n");
-    }
-    else
-    {
+//     unsigned int number_of_nodes = 0;
+//     if (temp_head_node == NULL)
+//     {
+//         printf("No SNP nodes in the gene nodes_snp_list function\n");
+//     }
+//     else
+//     {
 
-        while ((temp_head_node) != NULL)
-        {
-            ++number_of_nodes;
-            temp_head_node = (temp_head_node)->next_snp_node;
-        }
-    }
-    return number_of_nodes;
-}
+//         while ((temp_head_node) != NULL)
+//         {
+//             ++number_of_nodes;
+//             temp_head_node = (temp_head_node)->next_snp_node;
+//         }
+//     }
+//     return number_of_nodes;
+// }
 //////Function ends
 
 // void display_gene_list(gene_store *headnode)

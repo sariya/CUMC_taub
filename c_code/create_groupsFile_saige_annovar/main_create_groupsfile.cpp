@@ -64,16 +64,13 @@ int main(int argc, char *argv[])
 
     while ((getline(&line, &len, fp)) != -1)
     {
-        //printf("%s\n ", line);
+        
         char *token = NULL;
         remove_trailingspaces(line); //remove trailing new line character
 
         int count_split = 1; //use this for counting split. as columns are fixed
         token = strtok(line, delimiters);
-        //char snp_name_parsed[MAX_LEN_SNP]; //chr1:33879_A/C
-        //snp_name_parsed[0] = '\0';
-        //char gene_name[MAX_LEN_GENE];
-        //char *SNP_POS = NULL;
+        
         if (check_line_counter >= 1)
         {
             std::string snp_string = "chr";
@@ -83,14 +80,10 @@ int main(int argc, char *argv[])
                 if (count_split == 1)
                 {
                     snp_string = snp_string + token + ":"; //make chr1:
-                    //mystrcat(snp_name_parsed, "chr"); //make chr  //mystrcat(snp_name_parsed, token); // make chr22  //mystrcat(snp_name_parsed, ":");   // make chr22:
                 }
                 if (count_split == 2)
-                {
-                    //position
-                    //SNP_POS = token;  //use this to add linked list and perform juggling
+                { //position
                     snp_string = snp_string + token + "_";
-                    //mystrcat(snp_name_parsed, token); // make chr1:32300 //mystrcat(snp_name_parsed, "_");
                 }
 
                 if (count_split == 4)
@@ -98,7 +91,6 @@ int main(int argc, char *argv[])
                     //reference allele
                     if (strlen(token) != 1)
                     {
-                        //snp_name_parsed[0] = '\0';
                         break;
                     }
 
@@ -111,7 +103,6 @@ int main(int argc, char *argv[])
                     //alternate allele
                     if (strlen(token) != 1)
                     {
-                        //snp_name_parsed[0] = '\0';
                         break;
                     }
 
@@ -128,21 +119,11 @@ int main(int argc, char *argv[])
 
                     while (gene_token)
                     {
-                        //printf("we have gene %s %s\n", snp_name_parsed, gene_token);
-
                         gene_name = gene_token;
                         if (gene_name.compare("NONE") != 0)
                         {
-                            gene_snp_map[gene_token].push_back(snp_string);
+                            gene_snp_map[gene_name].push_back(snp_string);
                         }
-                        //gene_add_node(&start_gene, gene_token, snp_name_parsed, (unsigned int)strtoull(SNP_POS, NULL, 0));
-                        //printf("we have added SNP %s to gene %s. New list \n", snp_name_parsed, gene_token);
-                        //}
-                        //else
-                        //{
-                        //add_SNP_to_exiting_gene(&start_gene, gene_token, snp_name_parsed, (unsigned int)strtoull(SNP_POS, NULL, 0));
-                        //  printf("we have added SNP %s to gene %s. Existing list \n", snp_name_parsed, gene_token);
-                        //}
 
                         gene_token = strtok(NULL, delimit_gene);
                     }
@@ -164,9 +145,7 @@ int main(int argc, char *argv[])
     {
         free(line);
     }
-    // New output in seedNum_126820	chr1:32300_A/C	chr1:32301_A/C	chr1:32302_A/C  //printf("total number of nodes in gene are %u\n", get_length_gene_nodes(start_gene));
-
-    //display_gene_list(start_gene);     //get_SNP_counts_within_gene(start_gene); //this will get counts of SNPs within each gene
+    
     std::ofstream saige_output_stream(output_file);
 
     std::map<std::string, std::list<std::string>>::iterator it_map; //use this to iterate over genes and SNPs within
