@@ -14,24 +14,21 @@
 ////
 #include "parse_function.hpp"
 
+static struct option long_opts[] = {
+    /* ... */
+    {"annov_file", required_argument, NULL, 'a'}, //use this for annotation input file
+    {"out_file", required_argument, NULL, 'o'},   //use this for output file
+    {NULL, 0, NULL, 0}};
+static char short_option[] = "a:o:h"; //use this for parsing // this could have  *short_option
 int main(int argc, char *argv[])
-{
-    // gcc -Wpedantic -Wextra -Wall *.c -o ./parse_annot
+{   
+    char *annov_file = NULL;  // arg for annovar file .
+    char *output_file = NULL; // arg for output file .
+    assign_variables(argc, argv, short_option, long_opts, &annov_file, &output_file); //func to assign variables
+    FILE *fp = fopen(annov_file, "r");
 
-    //gene_store *start_gene = NULL;
-    //
-    //FILE *fp = fopen("/mnt/mfs/hgrcgrid/shared/MHAS/data/GENOTYPED/ANALYSES/gene_basedanalysis/annotation/INFO40/CHR22_MHAS_INFO40_plink.hg38_multianno.txt", "r");
-    FILE *fp = fopen(argv[1], "r");
-    printf("we have %s %s %d\n", argv[1], argv[2], argc);
-
-    if (argc != 3)
+    if (fp == NULL)
     {
-        printf("we have incorrect number of input params\n");
-        return -1;
-    }
-
-    //FILE *fp = fopen("test_commas.txt", "r");
-    if (fp == NULL){
         exit(EXIT_FAILURE);
     }
 
@@ -39,11 +36,15 @@ int main(int argc, char *argv[])
     size_t len = 0;
     int line_number = 0;
     const char *gene_delimiters = ",;"; //use this for spliting gene names
+    std::map<std::string, std::list<std::string>> gene_snp_store; //store list of snp-gene in a map
+
     while ((getline(&line, &len, fp)) != -1)
     {
+        std::string gene_name = "";
+        std::string snp_name = "chr"; //make chr12:3456:A:T
         remove_trailingspaces(line);
         char *token = NULL;
-        //char SNP[400];
+        
         token = strtok(line, "\t ");
         int count_split = 1;
 
@@ -53,19 +54,33 @@ int main(int argc, char *argv[])
             {
                 if (count_split == 2)
                 {
-                    //chr_concat(token, SNP); //make 21 as chr21:
+                    snp_name = snp_name + token + ":"; //chr_concat(token, SNP); //make 21 as chr21:
                 }
                 if (count_split == 3)
                 {
-                    //join_strings(token, ':', SNP); //make  chr21 as chr21:1234:
+                    snp_name = snp_name + token + ":"; //join_strings(token, ':', SNP); //make  chr21 as chr21:1234:
                 }
                 if (count_split == 5)
-                {
-                    //join_strings(token, ':', SNP); //make   chr21:1234: as chr21:1234:A:
+                {   
+                    if (strlen(token) == 1)
+                    {
+                        snp_name = snp_name + token + ":"; //join_strings(token, ':', SNP); //make   chr21:1234: as chr21:1234:A:
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
                 if (count_split == 6)
                 {
-                    //join_strings(token, '\0', SNP); //make  chr21:1234:A as chr21:1234:A:T
+                    if (strlen(token) == 1)
+                    {
+                        snp_name = snp_name + token; //join_strings(token, '\0', SNP); //make  chr21:1234:A as chr21:1234:A:T
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
 
                 if (count_split == 8)
@@ -75,17 +90,13 @@ int main(int argc, char *argv[])
 
                     while (gene_token)
                     {
-                        // if (search_gene(&start_gene, gene_token) == 0)
-                        // {
-                        //     gene_add_node(&start_gene, gene_token, SNP);
-                        // }
-                        // else
-                        // {
-                        //     /**
-                        //      * If gene exists in the linked list. simply add SNP name
-                        //     */
-                        //     add_SNP_to_exiting_gene(&start_gene, gene_token, SNP);
-                        // }
+                        gene_name = gene_token;
+                        if (gene_name.compare("NONE") != 0)
+                        {
+                            gene_snp_store[gene_name].push_back(snp_name);
+                        }
+
+                        gene_name = "";
                         gene_token = strtok(NULL, gene_delimiters);
                     }
                     //while loop ends of token for gene split
@@ -95,11 +106,10 @@ int main(int argc, char *argv[])
                 token = strtok(NULL, "\t ");
             }
             /// token and split column 8 check ends
-            //SNP[0] = '\0';
+            snp_name = "";
         }
 
         //line_number check ends
-
         line_number++; //parse from second line
     }
     //while loop ends of file reading
@@ -111,12 +121,33 @@ int main(int argc, char *argv[])
     }
 
     printf("we'll print into file now\n");
-    //display_gene_list(start_gene);
 
-    //printf("The number of nodes are %d\n", get_length_gene_nodes(start_gene));
-    //print_annotations(start_gene, argv[2]);
+    std::ofstream annovar_output_stream(output_file); //use this to print to an output file
+    
+    std::map<std::string, std::list<std::string>>::iterator it_map; //use this to iterate over genes and SNPs within
+
+    for (it_map = gene_snp_store.begin(); it_map != gene_snp_store.end(); ++it_map)
+    {
+        std::string print_annot = "";
+        print_annot = it_map->first + '\n';
+
+        std::list<std::string>::iterator it_snp_list;
+
+        //iterate over SNPs within the gene
+        for (it_snp_list = (it_map->second).begin(); it_snp_list != (it_map->second).end(); ++it_snp_list)
+        {
+            print_annot = print_annot + it_snp_list->c_str() + '\n';
+        }
+        //for loop of snp list ends
+        print_annot=print_annot+"END\n"; //add final END to it
+
+        annovar_output_stream <<print_annot <<'\n' ;
+        
+    }
+    //for loop ends
+    annovar_output_stream.close(); 
+
     printf("SNP-gene annotations have been printed in the output file provided\n");
-    //delete_linked_list_gene(&start_gene);
     printf("Exiting code\n");
     return 0;
 }
