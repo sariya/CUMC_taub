@@ -151,8 +151,8 @@ int main(int argc, char *argv[])
      * we will print genes to each sep output file
     */
 
-    std::map<std::string, std::list<snp_store> >::iterator it_map;
-    std::cout << "mymap.size() is " << gene_snp_map.size() << '\n';
+    std::map<std::string, std::list<snp_store> >::iterator it_map; //use it to iterate gene-snpp information
+    std::cout << "Unique genes as " << gene_snp_map.size() << '\n';
     std::string new_filename = output_file;     //use this for each gene
     std::list<snp_store>::iterator it_snp_list; //use it later in the for loop
 
@@ -166,8 +166,9 @@ int main(int argc, char *argv[])
         //std::cout << "gene is " << it_map->first << " with length " << (it_map->second).size() << '\t' << "file name " << new_filename << '\n';
         if ((it_map->second).size() >= 2)
         {
-            std::ofstream gene_output_stream(new_filename);
-            std::string gene_pos_alleles = "";
+            ///only if genes have two SNPs at least
+            std::ofstream gene_output_stream(new_filename); //use this to output genes
+            std::string gene_pos_alleles = ""; //make a string for each gene-snp-ref-alt allele
 
             //only if we have more than 2 SNPs in it
             for (it_snp_list = (it_map->second).begin(); it_snp_list != (it_map->second).end(); ++it_snp_list)
@@ -181,16 +182,8 @@ int main(int argc, char *argv[])
         }
         //     //iterate over SNPs within the gene
 
-        // if(index % 90 ==0 ){
-        //      new_filename=new_filename+std::to_string(index)+".txt" ;
-        //     std::cout << "earlier " <<'\t'   << new_filename << '\n';
-        // }
-        //         else{
-        // new_filename=new_filename+std::to_string(index)+".txt";
-        //         }
-        ///for loop ends
     }
     //for loop ends of the iterator
-
+    printf("Check current working directory for gene files with prefix of output provided. \n");
     return 0;
 }
