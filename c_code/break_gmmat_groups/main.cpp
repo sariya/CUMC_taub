@@ -68,25 +68,21 @@ int main(int argc, char *argv[])
         {
             count_split = 1;                   //use this for counting split. as columns are fixed
             std::string temp_snp_name = "chr"; //we will use this for later uses : chr19:12456:A:T
-            std::string func_ann = "";         // use this with SNP struct
 
             remove_trailingspaces(line); //remove trailing new line character
 
             char *token = NULL;
-            //int count_split = 1; //use this for counting split. as columns are fixed
             token = strtok(line, delimiters);
             snp_store snp_temp_info = snp_store(); //make a new struct of SNP
             while (token != NULL)
             {
                 if (count_split == 1)
                 {
-                    //temp_snp_name = temp_snp_name + token + ":"; // make chr1:
                     snp_temp_info.chromosome = token;
                 }
                 if (count_split == 2)
                 {
                     //position
-                    //temp_snp_name = temp_snp_name + token + ":"; // make chr1:123:
                     snp_temp_info.position = token;
                 }
                 if (count_split == 4)
@@ -94,7 +90,6 @@ int main(int argc, char *argv[])
                     if (strlen(token) == 1)
                     {
                         //reference allele
-                        //temp_snp_name = temp_snp_name + token + ":"; // make chr1:123:A
                         snp_temp_info.ref_allele = token[0];
                     }
                     else
@@ -107,7 +102,6 @@ int main(int argc, char *argv[])
                     //alternate allele
                     if (strlen(token) == 1)
                     {
-                        //temp_snp_name = temp_snp_name + token; // make chr1:123:A:T
                         snp_temp_info.alt_allele = token[0];
                     }
                     else
@@ -115,11 +109,7 @@ int main(int argc, char *argv[])
                         break;
                     }
                 }
-                if (count_split == 6)
-                {
-                    //func information
-                    func_ann = token;
-                }
+                
                 if (count_split == 7)
                 {
                     char *gene_token; //use this to parse gene information  //gene_store gene_info;
