@@ -21,11 +21,25 @@ static struct option long_opts[] = {
     {NULL, 0, NULL, 0}};
 static char short_option[] = "a:o:h"; //use this for parsing // this could have  *short_option
 int main(int argc, char *argv[])
-{   
-    char *annov_file = NULL;  // arg for annovar file .
-    char *output_file = NULL; // arg for output file .
+{
+    char *annov_file = NULL;                                                          // arg for annovar file .
+    char *output_file = NULL;                                                         // arg for output file .
     assign_variables(argc, argv, short_option, long_opts, &annov_file, &output_file); //func to assign variables
     FILE *fp = fopen(annov_file, "r");
+
+    if (annov_file == NULL)
+    {
+        printf("no annovar file.\nExiting!\n");
+        print_usage();
+        exit(EXIT_FAILURE);
+    }
+
+    if (output_file == NULL)
+    {
+        printf("no output file.\nExiting!\n");
+        print_usage();
+        exit(EXIT_FAILURE);
+    }
 
     if (fp == NULL)
     {
@@ -35,7 +49,7 @@ int main(int argc, char *argv[])
     char *line = NULL;
     size_t len = 0;
     int line_number = 0;
-    const char *gene_delimiters = ",;"; //use this for spliting gene names
+    const char *gene_delimiters = ",;";                           //use this for spliting gene names
     std::map<std::string, std::list<std::string>> gene_snp_store; //store list of snp-gene in a map
 
     while ((getline(&line, &len, fp)) != -1)
@@ -44,7 +58,7 @@ int main(int argc, char *argv[])
         std::string snp_name = "chr"; //make chr12:3456:A:T
         remove_trailingspaces(line);
         char *token = NULL;
-        
+
         token = strtok(line, "\t ");
         int count_split = 1;
 
@@ -61,7 +75,7 @@ int main(int argc, char *argv[])
                     snp_name = snp_name + token + ":"; //join_strings(token, ':', SNP); //make  chr21 as chr21:1234:
                 }
                 if (count_split == 5)
-                {   
+                {
                     if (strlen(token) == 1)
                     {
                         snp_name = snp_name + token + ":"; //join_strings(token, ':', SNP); //make   chr21:1234: as chr21:1234:A:
@@ -123,7 +137,7 @@ int main(int argc, char *argv[])
     printf("we'll print into file now\n");
 
     std::ofstream annovar_output_stream(output_file); //use this to print to an output file
-    
+
     std::map<std::string, std::list<std::string>>::iterator it_map; //use this to iterate over genes and SNPs within
 
     for (it_map = gene_snp_store.begin(); it_map != gene_snp_store.end(); ++it_map)
@@ -139,13 +153,12 @@ int main(int argc, char *argv[])
             print_annot = print_annot + it_snp_list->c_str() + '\n';
         }
         //for loop of snp list ends
-        print_annot=print_annot+"END\n"; //add final END to it
+        print_annot = print_annot + "END\n"; //add final END to it
 
-        annovar_output_stream <<print_annot <<'\n' ;
-        
+        annovar_output_stream << print_annot << '\n';
     }
     //for loop ends
-    annovar_output_stream.close(); 
+    annovar_output_stream.close();
 
     printf("SNP-gene annotations have been printed in the output file provided\n");
     printf("Exiting code\n");
